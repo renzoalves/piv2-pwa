@@ -77,7 +77,7 @@
           <div class="text">
             <img
               class="logo"
-              src="@/assets/images/Moostri.png"
+              src="@/assets/images/moostri.png"
               alt="Logotipo Moostri"
             />
 
