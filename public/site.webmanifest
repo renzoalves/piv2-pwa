@@ -2,11 +2,17 @@
     "name": "PortalImendes",
     "short_name": "PortalImendes",
     "start_url": "/",
+    "description": "Portal IMendes - Inovação tributária para seu Negócio. A gestão tributária de sua Empresa muito mais produtiva, segura e tranquila. Atendemos os 27 estados.",
     "icons": [
         {
-            "src": "/android-chrome-96x96.png",
-            "sizes": "96x96",
-            "type": "image/png"
+            "src": "favicon-32x32.png",
+            "sizes": "32x32",
+            "type": "image/pn"
+        },
+        {
+            "src": "favicon-16x16.png",
+            "sizes": "16x16",
+            "type": "image/pn"
         }
     ],
     "theme_color": "#ffffff",
