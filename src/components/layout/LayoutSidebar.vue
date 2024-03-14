@@ -163,7 +163,7 @@
 
       <transition appear @enter="fadeIn">
         <span v-if="!collapse" class="version">v2.0 - Termos e Condições</span>
-        <span v-else class="version" title="Versão do Sistema v2.0.20240312-1227" style="cursor: pointer;">v2.0</span>
+        <span v-else class="version" title="Versão do Sistema v2.0.20240314-1457" style="cursor: pointer;">v2.0.1</span>
       </transition>
     </nav>
   </aside>
