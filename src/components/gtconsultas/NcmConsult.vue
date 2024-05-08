@@ -130,7 +130,6 @@
           <template v-for="(i, index) in Paginar" v-bind:key="index">
             <tr>
               <td v-if="mostrarAtividade">
-                <!-- {{ GetSessionStorageData('Perfil', 'prfTypeCnae') }} -->
                 <i
                   data-toggle="tooltip"
                   data-placement="top"
@@ -350,32 +349,15 @@ export default {
     ConsultDetails,
   },
   props: {
-    opcao: {
-      type: Number,
-    },
-    ncm: {
-      type: String,
-    },
-    ex: {
-      type: String,
-    },
-    consLote: {
-      type: String,
-    },
+    opcao: { type: Number },
+    ncm: { type: String },
+    ex: { type: String },
+    consLote: { type: String },
     // 0 - Normal 1 - Grande
-    tamanho: {
-      default: 0,
-      type: Number,
-    },
-    mostraratividade: {
-      type: Boolean,
-    },
-    mostrarsimples: {
-      type: Boolean,
-    },
-    consultaLoteCodigo: {
-      type: Boolean,
-    },
+    tamanho: { default: 0, type: Number },
+    mostraratividade: { type: Boolean },
+    mostrarsimples: { type: Boolean },
+    consultaLoteCodigo: { type: Boolean },
   },
   data() {
     return {
@@ -393,30 +375,17 @@ export default {
       consultaLoteCodigo: false,
       tipoConsulta: 0,
       objncmdetalhe: {},
-      //   tipoCnae: GetSessionStorageData("Perfil", "prfTypeCnae"),
       // Paginação
       qtdePaginas: 0,
       pagina: 1,
       resultado: [],
       paginaNavegacao: [],
       paginaEscolhida: null,
-      limites: [
-        {
-          qtde: 10,
-        },
-        {
-          qtde: 25,
-        },
-        {
-          qtde: 50,
-        },
-        {
-          qtde: 100,
-        },
-      ],
+      limites: [{ qtde: 10 }, { qtde: 25 }, { qtde: 50 }, { qtde: 100 }],
       limite: 10,
     };
   },
+
   methods: {
     //----------------------------------------------------------------------
     // Faz a consulta Individual ou em Lote.
@@ -431,7 +400,6 @@ export default {
 
       this.exportar = false;
       this.pagina = 1;
-
       this.enviadosInicial = 0;
 
       let mensagemRetorno = "";
@@ -443,6 +411,7 @@ export default {
 
       let auxValor = valor;
       let auxEx = exIPI;
+
       auxDataVig = userStore.user.profile.prfValidity;
 
       url = RetUrlAPI() + "ConsultNCM";
@@ -466,6 +435,7 @@ export default {
           //----------------------------------------------------------------------
           case 1:
             txtLote = consLote;
+
             if (txtLote.length <= 0) {
               this.exportar = false;
               this.NotificarMudancaExportacao("");
@@ -474,13 +444,13 @@ export default {
               );
               return;
             }
+
             break;
         }
 
         let rootObject = this.GerarObjetoEnvio(txtLote, opcao);
 
         this.totalEnviados = rootObject.nCms.length;
-
         this.processando = true;
 
         var jsonEnvio = JSON.stringify(rootObject);

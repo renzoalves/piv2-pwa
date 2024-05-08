@@ -13,12 +13,13 @@
             Perfil. Nos informe no chat se precisar de ajuda&#128521;
         </h5>
         <hr />
-        <TaxProfile :ufs="ufs" :ctribs="ctribs" :vacine="true" :solucaoid="20" :key="chave" :p_perfil="perfil" :index="perfil.prfIndex" />
+        <!-- <TaxProfile :ufs="ufs" :ctribs="ctribs" :vacine="true" :solucaoid="20" :key="chave" :p_perfil="perfil" :index="perfil.prfIndex" /> -->
+        <TaxProfile :ctribs="ctribs" :solucaoid="'20'" :p_perfil="perfil" :index="perfil.prfIndex" />
     </div>
     <div v-else class="container-fluid">
         <div class="row mt-5">
             <div class="mt-3">
-                <TaxProfileInfo :multiplosPerfis="true" :solution="20" v-if="!isMobile" />
+                <TaxProfileInfo :multiplosPerfis="true" :solution="'20'" v-if="!isMobile" />
             </div>
         </div>
         <div class="row">
@@ -71,12 +72,12 @@
                     <div class="card-body">
 
                         <div class="row card-row">
-                            <div class="col-md-2">
+                            <div class="col-sm-12 col-md-3 col-lg-2 col-xl-2">
                                 <label for="txtCodigo">Código</label>
                                 <input class="form-control form-control-sm" type="text" name="codigo" placeholder="Código" maxlength="50" v-model="codigo" @blur="ConsultaProduto(cnpj, codigo)" />
                             </div>
 
-                            <div class="col-md-9">
+                            <div class="col-sm-12 col-md-9 col-lg-9 col-xl-9">
                                 <label for="txtDescricao">Descrição</label>
                                 <input class="form-control form-control-sm" type="text" v-model="descricao" name="descricao" placeholder="Descrição do produto..." maxlength="50" readonly />
                             </div>
@@ -84,7 +85,7 @@
 
                         <div class="row card-row">
 
-                            <div class="col-md-4">
+                            <div class="col-sm-12 col-md-5 col-lg-4 col-xl-4">
                                 <label for="txtOrigem">Origem</label>
                                 <select class="form-control form-control-sm" v-model="origem" name="origem">
                                     <option v-for="(item, index) in lstOrigem" v-bind:key="index" v-bind:value="item.value">
@@ -93,7 +94,7 @@
                                 </select>
                             </div>
 
-                            <div class="col-md-1">
+                            <div class="col-sm-12 col-md-2 col-lg-2 col-xl-1">
                                 <label for="txtUfFornec">UF Fornec.</label>
                                 <select class="form-control form-control-sm" v-model="ufOrig" name="ufOrig">
                                     <option v-for="(item, index) in ufs" v-bind:key="index">
@@ -102,7 +103,7 @@
                                 </select>
                             </div>
 
-                            <div class="col-md-3">
+                            <div class="col-sm-12 col-md-5 col-lg-5 col-xl-3">
                                 <span class="row-perfil-fornec">
                                     <label for="txtPerfilFornec">Perfil Fornecedor</label>
                                     <label for="perfilSimples" style="margin-left: auto">Simples Nacional</label>
@@ -119,20 +120,25 @@
                             <!-- DETERMINAÇÃO DO PREÇO DE VENDA SUGERIDO -->
                             <template v-if="determResult == 0">
 
-                                <div class="col-md-1">
+                                <div class="col-sm-12 col-md-3 col-lg-2 col-xl-1">
                                     <label for="txtpFabrica" title="Preço de Fábrica" style="cursor: pointer">P. Fábrica R$</label>
-                                    <input class="form-control form-control-sm" type="text" v-model="pFabrica" name="pFabrica" placeholder="0.00" maxlength="50" readonly />
+                                    <input class="form-control form-control-sm" type="text" v-model="pFabrica" name="pFabrica" placeholder="0.00" maxlength="50" readonly style="text-align: right !important;"/>
                                 </div>
 
-                                <div class="col-md-1">
+                                <div class="col-sm-12 col-md-3 col-lg-2 col-xl-1">
                                     <label for="txtDesconto" title="Percentual de Desconto" style="cursor: pointer">% Desc.</label>
-                                    <input class="form-control form-control-sm" type="number" v-model="desconto" :readonly="pFabrica <= 0" name="desconto" placeholder="0.00" :onkeyup="CalcularPrecoCompra" maxlength="50" />
+                                    <input class="form-control form-control-sm" type="number" v-model="desconto" :readonly="pFabrica <= 0" name="desconto" placeholder="0.00" :onkeyup="CalcularPrecoCompra" maxlength="50" style="text-align: right !important;"/>
 
                                 </div>
 
-                                <div class="col-md-1">
+                                <div class="col-sm-12 col-md-3 col-lg-2 col-xl-1">
                                     <label for="txtpCompra" title="Preço de Compra" style="cursor: pointer">P. Compra R$</label>
-                                    <input class="form-control form-control-sm" type="number" v-model="pCompra" name="pCompra" placeholder="0.00" :onkeyup="CalcularPercDesconto" maxlength="50" />
+                                    <input 
+                                        class="form-control form-control-sm" 
+                                        type="number" 
+                                        v-model="pCompra" 
+                                        v-on:keyup.enter="AdicionarProdutoLista(true)"
+                                        name="pCompra" placeholder="0.00" :onkeyup="CalcularPercDesconto" maxlength="50" style="text-align: right !important;"/>
                                 </div>
 
                             </template>
@@ -140,13 +146,14 @@
                             <!-- DETERMINAÇÃO DO PREÇO DE COMPRA -->
                             <template v-if="determResult == 1">
 
-                                <div class="col-md-1">&nbsp;</div>
-
-                                <div class="col-md-1">&nbsp;</div>
-
-                                <div class="col-md-1">
-                                    <label for="txtpVenda" title="Preço de Venda" style="cursor: pointer">P. Venda R$</label>
-                                    <input class="form-control form-control-sm" type="number" v-model="pVenda" name="pVenda" placeholder="0.00" maxlength="50" />
+                                <div class="col-sm-12 col-md-3 col-lg-3 col-xl-3">
+                                    <label for="txtpVenda" title="Preço de Venda" style="cursor: pointer">Preço de Venda R$</label>
+                                    <input 
+                                        class="form-control form-control-sm" 
+                                        type="number" 
+                                        v-model="pVenda"
+                                        v-on:keyup.enter="AdicionarProdutoLista(true)" 
+                                        name="pVenda" placeholder="0.00" maxlength="50" style="text-align: right !important;"/>
                                 </div>
 
                             </template>
@@ -154,27 +161,32 @@
                             <!-- DETERMINAÇÃO DA MARGEM DE LUCRO -->
                             <template v-if="determResult == 2">
 
-                                <div class="col-md-1">&nbsp;</div>
 
-                                <div class="col-md-1">
-                                    <label for="txtpCompra" title="Preço de Compra" style="cursor: pointer">P. Compra R$</label>
-                                    <input class="form-control form-control-sm" type="number" v-model="pCompra" name="pCompra" placeholder="0.00" maxlength="50" />
+                                <div class="col-sm-12 col-md-3 col-lg-3 col-xl-2">
+                                    <label for="txtpCompra" title="Preço de Compra" style="cursor: pointer">Preço de Compra R$</label>
+                                    <input class="form-control form-control-sm" type="number" v-model="pCompra" name="pCompra" placeholder="0.00" maxlength="50" style="text-align: right !important;"/>
                                 </div>
 
-                                <div class="col-md-1">
+                                <div class="col-sm-12 col-md-3 col-lg-3 col-xl-1">
                                     <label for="txtpVenda" title="Preço de Venda" style="cursor: pointer">P. Venda R$</label>
-                                    <input class="form-control form-control-sm" type="number" v-model="pVenda" name="pVenda" placeholder="0.00" maxlength="50" />
+                                    <input 
+                                        class="form-control form-control-sm" 
+                                        type="number" 
+                                        v-model="pVenda" 
+                                        v-on:keyup.enter="AdicionarProdutoLista(true)"
+                                        name="pVenda" placeholder="0.00" maxlength="50" style="text-align: right !important;"/>
                                 </div>
 
                             </template>
 
                             <div class="col-md-1 icon icon-large">
-                                <i class="fas fa-plus-circle" title="Adicionar produto" @click="AdicionarProdutoLista"></i>
+                                <i class="fas fa-plus-circle" title="Adicionar produto" @click="AdicionarProdutoLista(true)"></i>&nbsp;
                                 <i class="fas fa-cloud-upload-alt" title="Abre modal para importação de produtos em lote" @click="AbrirImportacao()"></i>
                             </div>
                         </div>
 
                         <div class="row card-row" v-if="produtos.length > 0">
+
                             <div class="col-md-12">
                                 <div class="table-responsive-sm table-responsive-md table-responsive-lg">
                                     <table class="table table-divider table-striped table-sm table-responsive-lg table-bordered">
@@ -192,7 +204,7 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <template v-for="(i, index) in produtosPaginados" v-bind:key="i.index">
+                                            <template v-for="(i, index) in Paginar" v-bind:key="i.index">
                                                 <tr>
                                                     <td class="text-center">
                                                         {{ i.codigo }}
@@ -306,22 +318,97 @@
                                     </table>
                                 </div>
                             </div>
-                            <nav class="mt-10" v-if="paginas > 1">
-                                <ul class="pagination">
-                                    <li class="page-item" :class="{disabled: paginaAtual === 1,}">
-                                        <a class="page-link" href="#" @click="MudarPagina(paginaAtual - 1)">Anterior</a>
-                                    </li>
-                                    <li class="page-item" v-for="pagina in paginas" :key="pagina" :class="{active:pagina === paginaAtual,}">
-                                        <a class="page-link" href="#" @click="MudarPagina(pagina)">{{ pagina }}</a>
-                                    </li>
-                                    <li class="page-item" :class="{disabled:paginaAtual === paginas.length,}">
-                                        <a class="page-link" href="#" @click="MudarPagina(paginaAtual + 1)">Próximo</a>
-                                    </li>
-                                </ul>
-                            </nav>
+
+                            <!-- Aplicação do SELETOR da qtde de itens por página (Topo da tabela) -->
+                            <div class="col-md-12">
+
+                                <template v-if="qtdePaginas > 1">
+                                <div class="col-md-5 col-lg-7 float-left mb-1 mr-0 mt-3">
+                                    <nav class="d-lg-flex justify-content-end overflow-auto" aria-label="Page navigation example">
+                                        <ul class="pagination">
+                                        
+                                            <li class="page-item" v-if="pagina != 1">
+                                                <a class="page-link" v-on:click.prevent.stop="pagina = 1;OrganizarNavegacao()" href="#">
+                                                    <i class="fas fa-angle-double-left"></i>
+                                                </a>
+                                            </li>
+
+                                            <li class="page-item" v-if="pagina != 1">
+                                                <a class="page-link" v-on:click.prevent.stop="pagina--;OrganizarNavegacao()" href="#">
+                                                    <i class="fas fa-angle-left"></i>
+                                                </a>
+                                            </li>
+
+                                            <li v-for="item in paginaNavegacao" :key="item" class="page-item" :class="{active: (item) === pagina}" v-on:click.prevent.stop="pagina = item;OrganizarNavegacao()">
+                                                <a class="page-link" href="#">{{item}}</a>
+                                            </li>
+
+                                            <li class="page-item" v-if="pagina < qtdePaginas" v-on:click.prevent.stop="pagina++;OrganizarNavegacao()">
+                                                <a class="page-link" href="#">
+                                                    <i class="fas fa-angle-right"></i>
+                                                </a>
+                                            </li>
+
+                                            <li class="page-item" v-if="qtdePaginas > 1 && pagina < qtdePaginas" v-on:click.prevent.stop="pagina = qtdePaginas;OrganizarNavegacao()">
+                                                <a class="page-link" href="#">
+                                                    <i class="fas fa-angle-double-right"></i>
+                                                </a>
+                                            </li>
+
+                                        </ul>
+                                    </nav>
+                                </div>
+                                </template>
+
+                                <div class="col-md-1 float-right mb-1 mt-2">
+                                    <input type="number" class="form-control form-control-sm valor" placeholder="Página" v-model="paginaEscolhida" v-on:keyup.enter="pagina = paginaEscolhida;OrganizarNavegacao()" />
+                                    <div id="lupa" v-on:click="pagina = paginaEscolhida;OrganizarNavegacao()">
+                                        <i class="fa fa-search lupa"></i>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-1 float-right mb-1 mt-2">
+                                    <select class="form-control form-control-sm" v-model="limite" title="Altera o limite de linhas por página." v-on:change="pagina=1;PaginarTabela()">
+                                        <option v-for="(item, i) in limites" :key="i" :value="item">{{ item }}</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- LINHAS DE IMPORTAÇÃO COM PROBLEMAS -->
+            <div class="col-md-12 mb-4" v-if="listaErroImportacao.length > 0">
+                <h1>Iconsistência na Importação</h1>
+                <div class="card">
+                    <div class="card-body">
+
+                        <div class="row card-row mt-30">
+                            <table class="table table-divider table-striped table-sm table-responsive-lg table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center">
+                                            Linhas de Importação que apresentartam inconsistências
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="(item, index) in listaErroImportacao" :key="index" class="tr-regular">
+                                        <td class="text-left">
+                                            {{ item }}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
 
                     </div>
+
+                    <button class="geral-button btn-sm col-md-1 float-right mb-2" @click="listaErroImportacao=[]">
+                        Ok, entendi
+                    </button>
                 </div>
             </div>
 
@@ -555,6 +642,7 @@
                                             <td class="text-center"> Custo Varejo </td>
                                             <td class="text-center"> Destaque </td>
                                         </tr>
+
                                         <tr v-for="(j, index) in resultados[index].detalhes" v-bind:key="j.index" class="tr-regular">
                                             <td class="text-center">
                                                 <i class="fas fa-info-circle" title="Abre demonstração do resultado" @click="AbrirDemostracao(index)"></i>
@@ -950,7 +1038,7 @@
                             </div>
                         </div>
 
-                        <a style="color: steelblue" v-on:click.stop.prevent="consLote = RemoverCabecalho(consLote)" title="Remove o cabeçalho do arquivo importado.">
+                        <a style="color: steelblue; cursor: pointer;" v-on:click.stop.prevent="consLote = RemoverCabecalho(consLote)" title="Remove o cabeçalho do arquivo importado.">
                             <i class="fa fa-trash" style="color: steelblue" aria-hidden="true"></i>&nbsp;Remover Cabeçalho
                         </a>
 
@@ -969,49 +1057,51 @@
                                         <th>Origem</th>
                                         <th>UF</th>
                                         <th>Perfil Fornecedor</th>
+                                        <th>Fornec. Simples Nac.(S/N)</th>
                                         <th>Valor de Compra</th>
+                                        <th>Descricao do Produto</th>
                                     </tr>
                                 </thead>
 
                                 <tbody>
                                     <tr>
-                                        <td class="tableexport-string">
-                                            7898268910178
-                                        </td>
+                                        <td class="tableexport-string">7898268910178</td>
                                         <td>0</td>
                                         <td>SP</td>
                                         <td>0</td>
+                                        <td>N</td>
                                         <td>10</td>
+                                        <td>DOCE PACOCA AIRON 160 G</td>
                                     </tr>
 
                                     <tr>
-                                        <td class="tableexport-string">
-                                            7898268910208
-                                        </td>
+                                        <td class="tableexport-string">7898268910208</td>
                                         <td>0</td>
                                         <td>MG</td>
                                         <td>1</td>
-                                        <td>10</td>
+                                        <td>N</td>
+                                        <td>11</td>
+                                        <td>PACOQUINHA DIET 20G AIRON</td>
                                     </tr>
 
                                     <tr>
-                                        <td class="tableexport-string">
-                                            7896653705156
-                                        </td>
+                                        <td class="tableexport-string">7896653705156</td>
                                         <td>0</td>
                                         <td>BA</td>
                                         <td>2</td>
-                                        <td>10</td>
+                                        <td>N</td>
+                                        <td>12</td>
+                                        <td>PACOCA CAST. C/CHOC. ZERO FLORMEL</td>
                                     </tr>
 
                                     <tr>
-                                        <td class="tableexport-string">
-                                            7896653702438
-                                        </td>
+                                        <td class="tableexport-string">7896653702438</td>
                                         <td>0</td>
                                         <td>RJ</td>
                                         <td>1</td>
-                                        <td>10</td>
+                                        <td>N</td>
+                                        <td>14</td>
+                                        <td>PACOQUINHA PREMIUM FLORMEL SM 90G</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -1044,6 +1134,7 @@
                 </div>
             </div>
         </div>
+
     </div>
 </LayoutSidebar>
 </template>
@@ -1052,16 +1143,9 @@
 import router from "@/router/index";
 import axios from "axios";
 import helpers from "@/helpers/index.js";
-import {
-    RetUrlAPI,
-    CallPostAsync
-} from "@/helpers/axios.js";
-import {
-    useAuthStore
-} from "@/stores/user";
-import {
-    useAlertStore
-} from "@/stores";
+import { RetUrlAPI, CallPostAsync } from "@/helpers/axios.js";
+import { useAuthStore } from "@/stores/user";
+import { useAlertStore } from "@/stores";
 
 const userStore = useAuthStore();
 
@@ -1069,6 +1153,18 @@ export default {
 
     data() {
         return {
+            //----------------------------------------------------------------
+            // PAGINAÇÃO
+            //----------------------------------------------------------------
+            pagina: 1,
+            qtdePaginas: 1,
+            limite: 10,
+            limites: [ 10, 25, 50 ],
+            listaItensPaginado: [],
+            paginaNavegacao: [],
+            paginaEscolhida: null,
+            //----------------------------------------------------------------
+
             alertStore: useAlertStore(),
             processando: false,
             processMoostri: false,
@@ -1079,8 +1175,8 @@ export default {
             xml: null,
             consLote: "",
             mostrarTabelaExemplo: false,
-            paginaAtual: 1,
-            produtosPorPagina: 5,
+
+
             idxProduto: -1,
             idxDestinatario: -1,
             idxResultado: -1,
@@ -1102,6 +1198,7 @@ export default {
             custoTransferencia: [],
             dre: [],
             custoVarejo: [],
+            listaErroImportacao: [],
 
             timeIn: '',
             timeOut: '',
@@ -1522,7 +1619,7 @@ export default {
         };
     },
 
-    methods: {
+    methods: {    
 
         Novo() {
             this.resultados = [];
@@ -1534,13 +1631,12 @@ export default {
             this.detalhe = {};
             this.destinatarios = [];
             this.destinatario = {};
-            this.mostrarResultado = false;
             this.resultado = {};
-            this.resultados = [];
             this.custoEntrada = [];
             this.custoTransferencia = [];
             this.dre = [];
             this.custoVarejo = [];
+            this.listaErroImportacao = [];
 
             this.pFabrica = 0;
             this.desconto = 0;
@@ -1575,11 +1671,13 @@ export default {
         },
 
         CalcularPrecoCompra() {
+            if(this.desconto < 0) return false;
+
             if (this.pFabrica > 0) {
                 let res = this.pFabrica - (this.pFabrica * this.desconto / 100);
 
                 if (res > 0) {
-                    this.pCompra = res;
+                    this.pCompra = Number(res).toFixed(4);
                 }
             }
         },
@@ -1588,15 +1686,14 @@ export default {
             if (this.pFabrica > 0) {
                 let res = 100 - ((this.pCompra / this.pFabrica) * 100);
 
-                if (res > 0) {
-                    this.desconto = res;
+                if (Number(this.pCompra) >= Number(this.pFabrica)) {
+                    this.desconto = 0;
+                    res = 0;
                 }
-            }
-        },
 
-        MudarPagina(pagina) {
-            if (pagina >= 1 && pagina <= this.paginas) {
-                this.paginaAtual = pagina;
+                if (res > 0) {
+                    this.desconto = res.toFixed(4);
+                }
             }
         },
 
@@ -1641,7 +1738,6 @@ export default {
                                 this.processMoostri = false;
 
                                 this.timeOut = this.ObterMomento();
-                                // this.timeOut = JSON.stringify(data.demonstrativos);
 
                                 if (!data.demonstrativos) {
                                     this.alertStore.error(data);
@@ -1656,19 +1752,21 @@ export default {
                                     this.resultado.detalhes = [];
 
                                     prod.detalhes.forEach((det) => {
+                                        var filtroRetornoApi = 
+                                        data.demonstrativos.filter(
+                                            filt => filt.codProduto == prod.codigo && Number(filt.perfilId) == Number(det.perfilId)  
+                                            );
 
-                                        var filtroRetornoApi = data.demonstrativos.filter(filt => filt.perfilId == det.perfilId);
-
-                                        let ufFornec = det.ufFornec;
+                                        let ufFornec = det.ufFornec.toUpperCase();
                                         let pApelido = det.perfilApelido;
 
                                         filtroRetornoApi.forEach((res) => {
 
                                             var retMoostri = new Object();
 
-                                            retMoostri.ufFornec = ufFornec;
+                                            retMoostri.ufFornec = ufFornec.toUpperCase();
                                             retMoostri.perfil = pApelido;
-                                            retMoostri.ufDestino = res.ufDest;
+                                            retMoostri.ufDestino = res.ufDest.toUpperCase();
                                             retMoostri.custoCompra = parseFloat(res.custo.custo).toFixed(2);
                                             retMoostri.valorTransferencia = 0;
                                             retMoostri.custoVarejo = 0;
@@ -1798,10 +1896,22 @@ export default {
                                                         valor: res.valor.das,
                                                         percentual: res.percentual.das,
                                                     },
+                                                    // {
+                                                    //     descricao: "(-) PIS/CONFINS :pis [" + res.valor.pisExcluidoIcms + "] :cofins [" + res.valor.cofinsExcluidoIcms + "] <+> :pis% [" +
+                                                    //     res.percentual.pisExcluidoIcms + "] :confins% [" + res.percentual.cofinsExcluidoIcms + "].",
+                                                    //     valor: res.valor.pisExcluidoIcms + res.valor.cofinsExcluidoIcms,
+                                                    //     percentual: res.percentual.pisExcluidoIcms + res.percentual.cofinsExcluidoIcms,
+                                                    // },
+                                                    // {
+                                                    //     descricao: "(-) PIS/CONFINS v2 :pis [" + res.valor.pis + "] :cofins [" + res.valor.cofins + "] <+> :pis% [" +
+                                                    //     res.percentual.pis + "] :confins% [" + res.percentual.cofins + "].",
+                                                    //     valor: res.valor.pis + res.valor.cofins,
+                                                    //     percentual: res.percentual.pis + res.percentual.cofins,
+                                                    // },
                                                     {
                                                         descricao: "(-) PIS/CONFINS",
-                                                        valor: res.valor.pisExcluidoIcms + res.valor.cofinsExcluidoIcms,
-                                                        percentual: res.percentual.pisExcluidoIcms + res.percentual.cofinsExcluidoIcms,
+                                                        valor: res.valor.pis + res.valor.cofins,
+                                                        percentual: res.percentual.pis + res.percentual.cofins,
                                                     },
                                                     {
                                                         descricao: "(=) Receita Líquida",
@@ -1831,15 +1941,13 @@ export default {
                                                 ],
                                             }
 
-                                            this.resultado.detalhes.push(retMoostri);
+                                            this.resultado.detalhes.push( {...retMoostri} );
                                         });
 
                                     });
 
-                                    this.resultados.push(this.resultado);
+                                    this.resultados.push( {...this.resultado} );
                                 });
-
-                                // console.log('resultados', this.resultados);
 
                                 this.mostrarResultado = true;
 
@@ -1851,9 +1959,18 @@ export default {
                             });
 
                     } else {
+                        let msgError = "Erro ao acionar Moostri:";
+
+                        if( data.errors.CnpjCpf ) {
+                            if( data.errors.CnpjCpf.length > 0  ){
+                                if( data.errors.CnpjCpf[0] == 'CNPJ or CPF is required')
+                                    msgError += 'Clique em "Configurações", na aba "Informações", preencha corretamente o campo CNPJ, salve e tente novamente.';
+                            }
+                        }
+
                         this.processando = false;
                         this.processMoostri = false;
-                        this.alertStore.error(data);
+                        this.alertStore.error(msgError);
                     }
 
                     this.processando = false;
@@ -1879,13 +1996,13 @@ export default {
                 perfil.tipoCnae = p.prfTypeCnae;
                 perfil.cnae = "";
                 perfil.recBruta = p.prfRecBruta;
-                perfil.uf = p.prfUF;
-                perfil.cfop = p.prfCfop;
+                perfil.uf = p.prfUF.toUpperCase();
+                perfil.cfop = p.prfCfop.toString();
                 perfil.dtUltRec = p.prfDtUltRec;
                 perfil.regimeEspecial = p.prfSpecialRegime;
                 perfil.substICMS = "N"; // Onde pegar depois?
 
-                perfis.push(perfil);
+                perfis.push({...perfil});
             });
 
             return perfis;
@@ -1901,7 +2018,8 @@ export default {
                 envDestinatario.destId = dest.destId;
                 envDestinatario.usuarioId = dest.usuaId;
                 envDestinatario.perfil = dest.perfil;
-                envDestinatario.ufDest = dest.uf;
+                envDestinatario.caracteristicaTributariaDestinatario = dest.perfil;
+                envDestinatario.ufDest = dest.uf.toUpperCase();
                 envDestinatario.substICMS = dest.substICMS;
                 envDestinatario.finalidade = dest.finalidade;
                 envDestinatario.tipoOperacao = dest.operacao;
@@ -1911,7 +2029,7 @@ export default {
                 envDestinatario.comissao = dest.comissao;
                 envDestinatario.outrasDespesas = dest.outrasDespesas;
 
-                envDestinatarios.push(envDestinatario);
+                envDestinatarios.push({...envDestinatario});
             });
 
             return envDestinatarios;
@@ -1923,21 +2041,20 @@ export default {
             let cabecalho = new Object();
 
             this.produtos.forEach(prod => {
-                // console.log(prod)
                 cabecalho = {};
                 produto = {};
 
                 produto.origemProduto = prod.detalhes[0].origem;
                 produto.tipoOperacao = this.operacao;
-                produto.perfilFornecedor = prod.detalhes[0].fornecPerfil;
+                produto.perfilFornecedor = Number(prod.detalhes[0].fornecPerfil);
                 produto.caracteristicaTributariaDestinatario = this.destinatarios[0].perfil;
                 produto.determinacaoResultado = this.determResult;
                 produto.autoCalc = true;
                 produto.usuarioID = userStore.user.userId;
 
                 produto.precoLiquidoPretendido = 0;
-                produto.precoCompra = prod.detalhes[0].pCompra;
-                produto.precoVenda = prod.detalhes[0].pVenda;
+                produto.precoCompra = (prod.detalhes[0].pCompra === "") ? "0.00" : prod.detalhes[0].pCompra;
+                produto.precoVenda = (prod.detalhes[0].pVenda === "") ? "0.00" : prod.detalhes[0].pVenda;
                 produto.custoBaseInformado = "0.00";
 
                 produto.margemLucroDesejada = "10.00";
@@ -1949,16 +2066,14 @@ export default {
                 produto.produtoCodImendes = "";
                 produto.produtoCodInterno = !helpers.VerificaDigito(prod.codigo) ? prod.codigo : "";
                 produto.producaoPropria = "N";
-                produto.ufFornecedor = prod.detalhes[0].ufFornec;
-                produto.ufDestinatario = this.destinatarios[0].uf;
+                produto.ufFornecedor = prod.detalhes[0].ufFornec.toUpperCase();
+                produto.ufDestinatario = this.destinatarios[0].uf.toUpperCase();
                 produto.descricao = prod.descricao;
 
                 cabecalho.cabecalhoProduto = produto;
 
                 produtos.push(cabecalho);
             });
-
-            // console.log('produtos', produtos);
 
             return produtos;
         },
@@ -2182,7 +2297,7 @@ export default {
             this.idxResultado = index;
         },
 
-        AdicionarProdutoLista() {
+        AdicionarProdutoLista(mostrarMensagem) {
             let _pFabrica = this.pFabrica;
             let _pCompra = this.pCompra;
             let _pVenda = this.pVenda;
@@ -2191,15 +2306,18 @@ export default {
             this.idxProduto = -1;
 
             if (this.codigo == "") {
-                this.alertStore.error("Não é possível adicionar um produto com o código vazio.");
-                return;
+                if(mostrarMensagem)
+                    this.alertStore.error("Não é possível adicionar um produto com o código vazio.");
+
+                return false;
             }
 
             // DET. PREÇO DO RESULADO: PREÇO DE VENDA SUGERIDO
             if (_determResult == 0) {
                 if (_pFabrica + _pCompra <= 0) {
-                    this.alertStore.error("Não é possível adicionar um produto sem Preço de Fábrica e sem Preço de Compra.");
-                    return;
+                    if(mostrarMensagem)
+                        this.alertStore.error("Não é possível adicionar um produto sem Preço de Fábrica e sem Preço de Compra.");
+                    return false;
                 }
 
                 if (_pCompra == 0) {
@@ -2210,8 +2328,9 @@ export default {
             // DET. PREÇO DO RESULADO: DETE. DO VALOR DE COMPRA
             if (_determResult == 1) {
                 if (_pVenda <= 0) {
-                    this.alertStore.error("Não é possível adicionar um produto para um resultado de Determinação do Valor de Compra com o preço de Venda menor ou igual a zero.");
-                    return;
+                    if(mostrarMensagem)
+                        this.alertStore.error("Não é possível adicionar um produto para um resultado de Determinação do Valor de Compra com o preço de Venda menor ou igual a zero.");
+                    return false;
                 }
             }
 
@@ -2219,8 +2338,9 @@ export default {
             if (_determResult == 2) {
 
                 if (_pVenda <= 0 || _pCompra <= 0) {
-                    this.alertStore.error("Não é possível adicionar um produto para um resultado de Determinação da Margem de Lucro com o preço de Venda ou o preço de Compra menor ou igual a zero.");
-                    return;
+                    if(mostrarMensagem)
+                        this.alertStore.error("Não é possível adicionar um produto para um resultado de Determinação da Margem de Lucro com o preço de Venda ou o preço de Compra menor ou igual a zero.");
+                    return false;
                 }
 
             }
@@ -2240,12 +2360,9 @@ export default {
                 let usarPMC = false;
                 let usarIVA = false;
 
-                let ufOrig = this.ufOrig;
-                let ufDest = this.ufDest;
+                let ufOrig = this.ufOrig.toUpperCase();
+                let ufDest = this.ufDest.toUpperCase();
                 let cnae = this.cnae;
-
-                console.log('ufOrig', ufOrig);
-                console.log('ufDest', ufDest);
 
                 if (this.mostrarPmpf) {
                     pmpf = parseFloat(this.retRgr_Pmpf_vPmpf);
@@ -2268,8 +2385,11 @@ export default {
                     if (usarPMPF){
                         if( pmpf > 0 && _pCompra > pmpf ) {
                             exMsg += `PMPF ($ ${pmpf}).`;
-                            this.alertStore.error(exMsg);
-                            return;
+
+                            if(mostrarMensagem)
+                                this.alertStore.error(exMsg);
+
+                            return false;
                         }
                     }
 
@@ -2277,11 +2397,14 @@ export default {
                         if( pmc > 0 && _pCompra > pmc) {
                             exMsg += `PMC ($ ${pmc}).`;
 
-                            this.alertStore.error(exMsg);
-                            return;
+                            if(mostrarMensagem)
+                                this.alertStore.error(exMsg);
+
+                            return false;
                         }
                     }
                 }
+
             }
             //#endregion
             // ----------------------------------------------------------------------
@@ -2297,9 +2420,9 @@ export default {
                 this.detalhe = {};
                 this.detalhe.perfilId = perfil.prfId;
                 this.detalhe.perfilApelido = perfil.prfApelido
-                this.detalhe.ufPerfil = perfil.prfUF;
+                this.detalhe.ufPerfil = perfil.prfUF.toUpperCase();
                 this.detalhe.origem = parseInt(this.origem);
-                this.detalhe.ufFornec = this.ufOrig;
+                this.detalhe.ufFornec = this.ufOrig.toUpperCase();
                 this.detalhe.fornecOptSimplesNacional = this.fornecOptSimplesNacional;
                 this.detalhe.fornecPerfil = this.fornecPerfil;
                 this.detalhe.pFabrica = this.pFabrica;
@@ -2316,6 +2439,10 @@ export default {
             this.produto = {};
             this.detalhes = [];
             this.determTravado = true;
+
+            this.PaginarTabela();
+
+            return true;
         },
 
         RemoveProdutoLista(index) {
@@ -2335,6 +2462,8 @@ export default {
             }).then((result) => {
                 if (result.isConfirmed) {
                     this.produtos.splice(index, 1);
+
+                    this.PaginarTabela();
                 }
             });
         },
@@ -2372,7 +2501,7 @@ export default {
             auxDest.substICMS = 'N';
             auxDest.perfil = this.cTrib;
             auxDest.simplesnacional = this.simples;
-            auxDest.uf = this.ufDest;
+            auxDest.uf = this.ufDest.toUpperCase();
             auxDest.finalidade = this.destino;
             auxDest.operacao = this.operacao;
             auxDest.margem = parseFloat(this.margemLiquida).toFixed(2);
@@ -2391,7 +2520,7 @@ export default {
 
             this.destinatarios[this.idxDestinatario].perfil = this.cTrib;
             this.destinatarios[this.idxDestinatario].simplesnacional = this.simples;
-            this.destinatarios[this.idxDestinatario].uf = this.ufDest;
+            this.destinatarios[this.idxDestinatario].uf = this.ufDest.toUpperCase();
             this.destinatarios[this.idxDestinatario].finalidade = this.destino;
             this.destinatarios[this.idxDestinatario].operacao = this.operacao;
             this.destinatarios[this.idxDestinatario].margem = parseFloat(this.margemLiquida).toFixed(2);
@@ -2448,7 +2577,7 @@ export default {
         AlterarDestinatario(index) {
             this.cTrib = this.destinatarios[index].perfil;
             this.simples = this.destinatarios[index].simplesnacional;
-            this.ufDest = this.destinatarios[index].uf;
+            this.ufDest = this.destinatarios[index].uf.toUpperCase();
             this.destino = this.destinatarios[index].finalidade;
             this.operacao = this.destinatarios[index].operacao;
             this.margemLiquida = this.destinatarios[index].margem;
@@ -2466,7 +2595,7 @@ export default {
         LimparCamposDestinatario() {
             this.cTrib = 3;
             this.simples = false;
-            this.ufDest = this.ufOrig;
+            this.ufDest = this.ufOrig.toUpperCase();
             this.margemLiquida = 0.0;
             this.frete = 0.0;
             this.comissao = 0.0;
@@ -2500,7 +2629,7 @@ export default {
                     this.destinatario.usuaId = dest.usuaId;
                     this.destinatario.perfil = dest.perfil;
                     this.destinatario.simplesNacional = dest.simplesNacional;
-                    this.destinatario.uf = dest.uf;
+                    this.destinatario.uf = dest.uf.toUpperCase();
                     this.destinatario.substICMS = dest.substICMS;
                     this.destinatario.finalidade = dest.finalidade;
                     this.destinatario.operacao = dest.operacao;
@@ -2516,7 +2645,7 @@ export default {
 
         SetupCalcTrib(pUf, pRegime, pRecBruta, pCnpjCpf) {
             this.amb = 2;
-            this.ufOrig = pUf;
+            this.ufOrig = pUf.toUpperCase();
             this.cnpj = pCnpjCpf;
             this.recBruta = pRecBruta;
 
@@ -2525,7 +2654,7 @@ export default {
             // completar os dados para um consumo "simples" da API, que nesse ponto
             // serve apenas para consultar a descrição do produto.
             //----------------------------------------------------------------------
-            this.ufDest = this.ufOrig;
+            this.ufDest = this.ufOrig.toUpperCase();
             //----------------------------------------------------------------------
 
             // Definindo Regime
@@ -2580,22 +2709,53 @@ export default {
             lstProdLote.forEach((element) => {
                 let produto = element.split(";");
 
-                this.codigo = produto[0];
-                this.origem = produto[1];
-                this.ufOrig = produto[2];
-                this.fornecPerfil = produto[3];
-                this.pCompra = produto[4];
+                this.codigo = '';
+                this.origem = 0;
+                this.ufOrig = '';
+                this.fornecPerfil = 0;
+                this.fornecOptSimplesNacional = false;
+                this.pCompra = 0;
+                this.descricao = '';
 
-                this.AdicionarProdutoLista();
+                if( produto.length === 7 ){
+                    this.codigo = produto[0];
+                    this.origem = produto[1];
+                    this.ufOrig = produto[2].toUpperCase();
+                    this.fornecPerfil = produto[3];
+                    this.fornecOptSimplesNacional = ( produto[4].toUpperCase() == 'S' );
+                    this.pCompra = produto[5];
+                    this.descricao = produto[6].toUpperCase();
+
+                    if(this.codigo.trim().length <= 0 || this.origem.trim().length <= 0 || this.ufOrig.trim().length <= 0 || 
+                        this.fornecPerfil.trim().length <= 0 || this.pCompra.trim().length <= 0 || this.descricao.trim().length <= 0){
+
+                        this.listaErroImportacao.push(element);
+                        return;
+                    }
+                }
+
+                if( !this.AdicionarProdutoLista(false) || produto.length != 7 ){
+                    this.listaErroImportacao.push(element);
+                }
             });
+
+            if( this.consLote.length > 0 )
+                this.consLote = "";
+
+            if( this.listaErroImportacao.length > 0 ){
+                this.alertStore.error("Foram encontrados linhas com informações inconsistentes. Verifique e tente novamente.");
+                // this.alertStore.error(this.listaErroImportacao);
+            }
+
+            this.PaginarTabela();
         },
 
         GetTextoTabulado() {
             return (
-                "0;N;N;7898268910178;DOCE PACOCA AIRON 160 G;MG;3;0;S;MG;0;;0;0;0;0;0;0;0;20;0;0;0;100;0;0;N;N;N;N;N\n" +
-                "0;N;N;7898268910208;PACOQUINHA DIET 20G AIRON;MG;3;0;N;;;;0;0;0;0;0;0;100;10;0;0;0;0;0;0;N;N;N;N;N\n" +
-                "1;N;N;7896653705156;PACOCA CAST. C/CHOC. ZERO FLORMEL;SP;3;0;S;;;MG;10;250;100;70;0;0;0;20;0;5;0;100;150;1;N;N;N;N;N\n" +
-                "1;N;N;7896653702438;PACOQUINHA PREMIUM FLORMEL SM 90G;MG;3;0;S;;;MG;1;2;3;4;5;0;0;0;0;0;0;100;150;2;N;N;N;N;N"
+                "7898268910178;0;MG;0;N;10;DOCE PACOCA AIRON 160 G\n" +
+                "7898268910208;0;MG;1;N;11;PACOQUINHA DIET 20G AIRON\n" +
+                "7896653705156;0;SP;2;N;12;PACOCA CAST. C/CHOC. ZERO FLORMEL\n" +
+                "7896653702438;0;MG;1;N;14;PACOQUINHA PREMIUM FLORMEL SM 90G"
             );
         },
 
@@ -2609,6 +2769,12 @@ export default {
             } else {
                 this.EnviarDadosArquivo(event, vm);
             }
+        },
+
+        LimparInputFile(){
+            this.consLote = "";
+            // document.getElementById("file-upload").value = "";
+            // document.getElementById("fileNameUpload").value = "";
         },
 
         LerXml(event) {
@@ -2643,11 +2809,11 @@ export default {
                 this.origem = origList[i].childNodes[0].nodeValue;
                 this.pCompra = vCompra[i].childNodes[0].nodeValue;
 
-                this.ufOrig = ufList[0].childNodes[0].nodeValue;
+                this.ufOrig = ufList[0].childNodes[0].nodeValue.toUpperCase();
                 this.fornecOptSimplesNacional =
                     crt[0].childNodes[0].nodeValue == "1" ? true : false;
 
-                this.AdicionarProdutoLista();
+                this.AdicionarProdutoLista(false);
             }
 
             this.LimparCamposProdutos();
@@ -2768,7 +2934,7 @@ export default {
                                         // ----------------------------------------------------------------------
                                         //#region Estadual
 
-                                        this.retRgr_Uf = retRegrasUf.uF;
+                                        this.retRgr_Uf = retRegrasUf.uF.toUpperCase();
                                         this.retRgr_Mensagem = retRegrasUf.mensagem;
                                         this.retRgr_Cfop = retRegrasUf.CFOP.cFOP;
 
@@ -3043,10 +3209,10 @@ export default {
 
         UsarPmpfCompra(ufOrig, ufDest, cnae, pmpf, trava, travaAjustada, pmc, baseCalculo) {
             let usarPMPF = true;
-            let userUf = ufDest; // UF do Fornecedor
-            let destinatarioUf = ufOrig; // UF do Usuário Moostri
+            let userUf = ufDest.toUpperCase(); // UF do Fornecedor
+            let destinatarioUf = ufOrig.toUpperCase(); // UF do Usuário Moostri
 
-            let fornecedorUf = ufOrig; // UF do Fornecedor
+            let fornecedorUf = ufOrig.toUpperCase(); // UF do Fornecedor
             let fornecedorPerfil = this.fornecPerfil;
 
             let lista = this.retGrupo_Lista;
@@ -3095,8 +3261,8 @@ export default {
             let tipo = this.retGrupo_Tipo;
             let ehMedicamento = (lista == null || lista == "") || (tipo == null || tipo == "");
 
-            let usuarioUf = ufDest; // UF do Usuário Moostri
-            let destinoUf = ufOrig; // UF do Fornecedor
+            let usuarioUf = ufDest.toUpperCase(); // UF do Usuário Moostri
+            let destinoUf = ufOrig.toUpperCase(); // UF do Fornecedor
 
             if (!ehMedicamento)
                 return false;
@@ -3155,13 +3321,24 @@ export default {
             this.processando = true;
 
             this.SetupCalcTrib(
-                userStore.user.profile.prfUF,
+                userStore.user.profile.prfUF.toUpperCase(),
                 userStore.user.profile.prfTaxRegime,
                 userStore.user.profile.prfRecBruta,
                 cabecalho.cnpjcpf);
 
             CallPostAsync(user, pwd, url, objEnvio, true)
                 .then((data) => {
+
+                    console.log(data);
+                    console.log('title' + data.title);
+
+                    if( data.title ){
+                        this.codigo = '';
+                        this.alertStore.error('Consulta não autorizada. Clique em "Configurações", na aba "Informações", preencha corretamente o campo CNPJ, salve e tente novamente.');
+                        this.processando = false;
+                        return;
+                    }
+
                     if (data.ret) {
                         this.alertStore.error(data.ret.mensagem);
                         this.processando = false;
@@ -3197,7 +3374,6 @@ export default {
                 })
                 .catch((reason) => {
                     console.log(reason);
-                    this.alertStore.error("Falha ao atualizar as informações vindas do servidor.");
                     this.alertStore.error(reason);
                     this.processando = false;
                 });
@@ -3211,7 +3387,7 @@ export default {
             emit.crt = crt;
             emit.regimeTrib = regime;
             //emit.indIE = indIE;
-            emit.uf = uf;
+            emit.uf = uf.toUpperCase();
             emit.cnae = cnae;
             emit.dia = dia;
             emit.mes = mes;
@@ -3225,7 +3401,7 @@ export default {
         DadosPerfil(uf, cfop, cTrib, destino, simples, origem) {
             var perfil = new Object();
 
-            perfil.uf = [uf];
+            perfil.uf = [uf.toUpperCase()];
             perfil.cfop = cfop;
             perfil.caracTrib = [Number(cTrib)];
             perfil.finalidade = Number(destino);
@@ -3246,7 +3422,7 @@ export default {
         },
 
         VerificarCampos(cnpj, ufOrig, ufDest, cfop, cTrib, codigo, descricao) {
-            // if(ObterDadoLocalStorage('Perfil', 'prfTaxRegime') != 2) {
+            // if(ObterDadoLocalStorage('Perfil', 'c') != 2) {
             //     this.alertStore.error( 'Essa solução só está homologada para empresas do Simples Nacional até o momento.');
             //     return false;
             // }
@@ -3384,16 +3560,78 @@ export default {
                 momento.getHours() + ':' + momento.getMinutes() + ':' + momento.getSeconds();
         },
 
+        //--------------------------------------------------------------------------------
+        // PAGINAÇÃO RZO-NEW
+        //--------------------------------------------------------------------------------
+        OrganizarNavegacao() {
+            if (this.pagina == '...' || this.pagina > this.qtdePaginas)
+                return;
+
+            this.pagina = parseInt(this.pagina);
+            
+            if (isNaN(this.pagina))
+                return;
+
+            this.paginaNavegacao = [];
+            
+            if (this.pagina > 1) {
+                let paginasAnteriores = this.pagina - 2;
+
+                for (let z = paginasAnteriores; z < this.pagina; z++) {
+                    if (z > 0 && z != this.pagina)
+                        this.paginaNavegacao.push(z);
+                }
+            }
+
+            this.paginaNavegacao.push(this.pagina);
+
+            if (this.pagina != this.qtdePaginas) {
+                let paginasPosteriores = this.pagina + 2;
+                
+                for (let x = this.pagina; x < paginasPosteriores; x++) {
+                    if (x != this.pagina)
+                        this.paginaNavegacao.push(x);
+                }
+
+                if (this.pagina - 3 < this.qtdePaginas - 5) {
+                    this.paginaNavegacao.push('...');
+                    this.paginaNavegacao.push(this.qtdePaginas);
+                }
+            }
+        },
+
+        Paginacao(itens) {
+            let pagina = this.pagina;
+            let qtdeLinhas = this.limite;
+            let de = (pagina * qtdeLinhas) - qtdeLinhas;
+            let para = (pagina * qtdeLinhas);
+
+            this.listaItensPaginado = itens.slice(de, para);
+            
+            return this.listaItensPaginado;
+        },
+
+        PaginarTabela() {
+            let tamanhoTotal = this.produtos.length;
+            let qtdeLinhas = this.limite;
+            let totalLinhas = tamanhoTotal;
+            let paginas = Math.ceil(totalLinhas / qtdeLinhas);
+            this.qtdePaginas = 0;
+
+            for (let i = 0; i < paginas; i++) {
+                this.qtdePaginas++;
+            }
+            
+            this.OrganizarNavegacao();
+        },
+        //--------------------------------------------------------------------------------
     },
     mounted() {
         helpers.VerificarAutenticacao();
         let autorizado = helpers.VerificarAcessos(20);
 
         if (!autorizado) {
-            this.alertStore.error(
-                "Você ainda não possui a solução do Moostri. Entre em contato com o nosso time de comercial!!"
-            );
-
+            userStore.user.mensagem = "Você não possui acesso ao Moostri. Entre em contato com o nosso time comercial!"            
             router.push("/");
         }
 
@@ -3402,17 +3640,19 @@ export default {
     },
 
     computed: {
-        produtosPaginados() {
-            const inicio = (this.paginaAtual - 1) * this.produtosPorPagina;
-            const fim = this.paginaAtual * this.produtosPorPagina;
 
-            return this.produtos.slice(inicio, fim);
+        //----------------------------------------------------------------
+        // PAGINAÇÃO RZO-NEW
+        //----------------------------------------------------------------
+        Paginar() {
+            if( this.produtos ) {
+                return this.Paginacao( this.produtos );
+            }
+
+            return [];
         },
-
-        paginas() {
-            return Math.ceil(this.produtos.length / this.produtosPorPagina);
-        },
-
+        //----------------------------------------------------------------
+         
         listaExportacao() {
             let lista = [];
 
@@ -3431,11 +3671,11 @@ export default {
                     item.codigo = codigo;
                     item.descricao = descricao;
 
-                    item.ufFornec = det.ufFornec;
+                    item.ufFornec = det.ufFornec.toUpperCase();
                     item.perfil = det.perfil;
-                    item.ufDestino = det.ufDestino;
+                    item.ufDestino = det.ufDestino.toUpperCase();
                     item.custoCompra = parseFloat(det.custoCompra).toFixed(2).toString();
-                    item.valorTransferencia = parseFloat(det.valorTransferencia).toFixed(2).toString();;
+                    item.valorTransferencia = parseFloat(det.valorTransferencia).toFixed(2).toString();
                     item.custoVarejo = parseFloat(det.custoVarejo).toFixed(2).toString();
                     item.spotlight = parseFloat(det.spotlight).toFixed(2).toString();
 
@@ -3487,7 +3727,7 @@ export default {
                     item.custo_dre_vLucroLiquido = parseFloat(cDre[13].valor).toFixed(2).toString();
                     item.custo_dre_pLucroLiquido = parseFloat(cDre[13].percentual).toFixed(2).toString();
 
-                    lista.push(item);
+                    lista.push({...item});
                 });
             });
 
@@ -3495,7 +3735,13 @@ export default {
         }
     },
 
-    watch: {},
+    watch: {
+        // Verificar se a pagina é menor que a quantidade total, ou se a página é igua a '...'
+        pagina: function (newPage, lastPage) {
+            if (newPage == '...' || newPage > this.qtdePaginas)
+                this.pagina = lastPage;
+        },
+    },
 
 };
 </script>
@@ -3525,61 +3771,20 @@ label {
     --cor-13: #d5dce4;
 }
 
-.cor0 {
-    color: var(--cor-0);
-}
-
-.cor1 {
-    color: var(--cor-1);
-}
-
-.cor2 {
-    color: var(--cor-2);
-}
-
-.cor3 {
-    color: var(--cor-3);
-}
-
-.cor4 {
-    color: var(--cor-4);
-}
-
-.cor5 {
-    color: var(--cor-5);
-}
-
-.cor6 {
-    color: var(--cor-6);
-}
-
-.cor7 {
-    color: var(--cor-7);
-}
-
-.cor8 {
-    color: var(--cor-8);
-}
-
-.cor9 {
-    color: var(--cor-9);
-}
-
-.cor10 {
-    color: var(--cor-10);
-}
-
-.cor11 {
-    color: var(--cor-11);
-}
-
-.cor12 {
-    color: var(--cor-12);
-}
-
-.cor13 {
-    color: var(--cor-13);
-}
+.cor0 { color: var(--cor-0); }
+.cor1 { color: var(--cor-1); }
+.cor2 { color: var(--cor-2); }
+.cor3 { color: var(--cor-3); }
+.cor4 { color: var(--cor-4); }
+.cor5 { color: var(--cor-5); }
+.cor6 { color: var(--cor-6); }
+.cor7 { color: var(--cor-7); }
+.cor8 { color: var(--cor-8); }
+.cor9 { color: var(--cor-9); }
+.cor10 { color: var(--cor-10); }
+.cor11 { color: var(--cor-11); }
+.cor12 { color: var(--cor-12); }
+.cor13 { color: var(--cor-13); }
 
 /* Tipografia */
 .font-1-xl {
@@ -3684,5 +3889,16 @@ label {
 
 .modal-content {
     background-color: var(--cor-7);
+}
+
+.valor {
+    border: #ddd solid 1px;
+    float: left;
+    cursor: text;
+}
+
+p {
+    font-weight: normal;
+    font-size: small;
 }
 </style>

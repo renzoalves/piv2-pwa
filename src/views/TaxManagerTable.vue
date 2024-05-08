@@ -9,6 +9,7 @@
             v-if="!isMobile"
             :multiplosPerfis="false"
             :solution="19"
+             v-on:emit-atualizar-dados="AtualizarDadosPerfil"
           />
         </div>
       </div>
@@ -69,7 +70,9 @@ export default {
       userLogged: userStore.user.hasAuth,
     };
   },
-  methods: {},
+  methods: {
+    AtualizarDadosPerfil() {}
+  },
   created() {
     if (
       !userStore.user.hasAuth ||

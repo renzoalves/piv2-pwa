@@ -51,6 +51,14 @@ h1 {
   margin-bottom: 10px !important;
 }
 
+.tituloIndex-0 {
+  color: #2e354c;
+  font-size: 36px !important;
+  font-weight: bolder !important;
+  line-height: 1.1em !important;
+  text-align: center !important;
+}
+
 .form-control {
   height: 2rem;
   font-size: 12px;
@@ -245,6 +253,7 @@ i {
 }
 
 #lupa > i,
+#lupa-sku-filtro > i,
 #eye > i {
   position: relative;
   float: right;
@@ -255,5 +264,24 @@ i {
 .valor {
   float: left !important;
   cursor: text !important;
+}
+
+.tabela-detalhes thead {
+  background-color: #5b5b5b;
+  color: #ffffff;
+}
+
+.tabela-detalhes thead th {
+  border: none;
+}
+
+.indicacao-alteracao-antes {
+  color: #ed3b03;
+  font-weight: bold;
+}
+
+.indicacao-alteracao-depois {
+  color: #303c53;
+  font-weight: bold;
 }
 </style>

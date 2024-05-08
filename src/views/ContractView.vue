@@ -473,7 +473,6 @@ export default {
           }
         })
         .catch((reason) => {
-          console.log(reason);
           this.alertStore.error(
             "Falha ao atualizar as informações vindas do servidor."
           );

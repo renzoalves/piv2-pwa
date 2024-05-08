@@ -22,13 +22,13 @@
     </div>
 
     <div class="container-fluid" v-else>
-
       <div class="row mt-5">
         <div class="mt-3">
           <TaxProfileInfo
             :multiplosPerfis="false"
             :solution="21"
-            v-on:emit-atualizar-dados="AtualizarDadosPerfil"/>
+            v-on:emit-atualizar-dados="AtualizarDadosPerfil"
+          />
         </div>
       </div>
 
@@ -581,7 +581,6 @@ export default {
           this.processando = false;
         })
         .catch((error) => {
-          console.log(error);
         });
     },
     pegarXmlKey(arquivoXml) {
@@ -718,9 +717,8 @@ export default {
     let autorizado = helpers.VerificarAcessos(21);
 
     if (!autorizado) {
-      this.alertStore.error(
-        "Você ainda não possui a solução do Vacine. Entre em contato com o nosso time de comercial!!"
-      );
+      userStore.user.mensagem =
+        "Você não possui acesso ao Vacine. Entre em contato com o nosso time de comercial!";
       router.push("/");
       // return;
     }

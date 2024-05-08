@@ -25,6 +25,7 @@
                 <input
                   class="form-control form-control-sm valor"
                   id="valor"
+                  name="search-home"
                   placeholder="Descrição"
                   v-model="searchValue"
                 />
@@ -38,6 +39,7 @@
       </div>
 
       <div class="box-grid">
+
         <div class="content-box vertical">
           <div class="text">
             <img
@@ -105,7 +107,9 @@
             </button>
           </div>
         </div>
+
       </div>
+
     </div>
   </LayoutSidebar>
 </template>
@@ -113,10 +117,14 @@
 <script setup>
 import { ref } from "vue";
 import { useAuthStore } from "@/stores/user";
+import { useAlertStore } from "@/stores";
 import { useRouter } from "vue-router";
+import { onMounted } from "vue";
 
 const userStore = useAuthStore();
+const alertStore = useAlertStore();
 const router = useRouter();
+const userip = userStore.pegarDadosIp();
 
 const userLogged = userStore.user.hasAuth;
 const searchValue = ref("");
@@ -134,11 +142,18 @@ const searchFromHome = () => {
   search.text = searchValue.value;
 
   userStore.user.mainSearch = JSON.stringify(search);
-
   searchValue.value = "";
 
   router.push("/gestor-tributario/consulta");
 };
+
+onMounted(() => {
+  if(userStore.user.mensagem) {
+    alertStore.error(userStore.user.mensagem);
+
+    userStore.user.mensagem = "";
+  }
+});
 
 const openSolucoes = (idSolucao) => {
   router.push(`/contrato?${idSolucao}`);

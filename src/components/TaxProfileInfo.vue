@@ -1,61 +1,90 @@
 <template>
   <div class="footer-info">
-    <div class="actions">
-      <a
-        style="color: dimgray"
-        href="#"
-        data-toggle="modal"
-        data-target="#profileModal"
-        data-backdrop="static"
-        data-keyboard="false"
-        title="Editar as características tributárias básicas."
-      >
-        <i
-          class="fa fa-address-card"
-          style="color: chocolate"
-          aria-hidden="true"
-        ></i
-        >&nbsp;Editar Perfil
-      </a>
-      &nbsp;
-      <a
-        style="color: dimgray; justify-content: right"
-        href="#"
-        data-toggle="modal"
-        data-target="#modalVigencia"
-        data-backdrop="static"
-        data-keyboard="false"
-        title="Informar da Data de Vigência desejada."
-      >
-        <i
-          class="fa fa-calendar"
-          style="color: chocolate"
-          aria-hidden="true"
-        ></i
-        >&nbsp;Def. Vigência
-      </a>
+    <div v-if="solution === 101">
+      <img
+        src="@/assets/images/integracoes/sankhya.png"
+        alt="Logo sankhya"
+        style="height: 60px"
+        v-if="userStore.user.idSolucaoIntegracao === '52'"
+      />
+
+      <img
+        src="@/assets/images/integracoes/bluesoft.webp"
+        alt="Logo bluesoft"
+        style="height: 80px"
+        v-if="userStore.user.idSolucaoIntegracao === '53'"
+      />
     </div>
-    <div class="info" v-if="!multiplosPerfis">
-      <span>
-        Perfil ativo:     <i>{{ userStore.user.profile.prfApelido }} </i>&nbsp;
-        |UF:              <i>{{ userStore.user.profile.prfUF }} </i>&nbsp;
-        |Atividade:       <i>{{ userStore.user.profile.prfTypeCnae }} </i>&nbsp;
-        |Reg. Tributário: <i>{{ helpers.DefCaracTrib(userStore.user.profile.prfTaxRegime) }} </i>&nbsp;
-        |Vigência:        <i>{{ helpers.ConverterDataBr(dataVigencia) }} </i>
+    <div v-else>
+      <div class="actions">
+        <a
+          style="color: dimgray"
+          href="#"
+          data-toggle="modal"
+          data-target="#profileModal"
+          data-backdrop="static"
+          data-keyboard="false"
+          title="Editar as características tributárias básicas."
+        >
+          <i
+            class="fa fa-address-card"
+            style="color: chocolate"
+            aria-hidden="true"
+          ></i
+          >&nbsp;Editar Perfil
+        </a>
+        &nbsp;
+        <a
+          style="color: dimgray; justify-content: right"
+          href="#"
+          data-toggle="modal"
+          data-target="#modalVigencia"
+          data-backdrop="static"
+          data-keyboard="false"
+          title="Informar da Data de Vigência desejada."
+        >
+          <i
+            class="fa fa-calendar"
+            style="color: chocolate"
+            aria-hidden="true"
+          ></i
+          >&nbsp;Def. Vigência
+        </a>
+      </div>
+      <div class="info" v-if="!multiplosPerfis">
+        <span>
+          Perfil ativo: <i>{{ userStore.user.profile.prfApelido }} </i>&nbsp;
+          |UF: <i>{{ userStore.user.profile.prfUF }} </i>&nbsp; |Atividade:
+          <i>{{ userStore.user.profile.prfTypeCnae }} </i>&nbsp;
+          |Reg.Tributário:
+          <i>{{ helpers.DefCaracTrib(userStore.user.profile.prfTaxRegime) }} </i
+          >&nbsp; |Reg.Especial:
+          <i
+            >{{
+              userStore.user.profile.prfSpecialRegime
+                ? userStore.user.profile.prfSpecialRegime
+                : "NÃO"
+            }} </i
+          >&nbsp; |Vigência:
+          <i>{{ helpers.ConverterDataBr(dataVigencia) }} </i>.
         </span>
-    </div>
-    <div class="list" v-else>
-      <ul v-for="(item, index) in perfis" v-bind:key="index">
-        <li class="info">
+      </div>
+      <div class="list" v-else>
+        <ul v-for="(item, index) in perfis" v-bind:key="index">
+          <li class="info">
             <span>
-                Perfil ativo:       <i>{{ item.prfApelido }} </i>&nbsp;
-                | UF:               <i>{{ item.prfUF }} </i>&nbsp;
-                | Atividade:        <i>{{ item.prfTypeCnae }} </i>&nbsp;
-                | Reg. Tributário:  <i>{{ helpers.DefCaracTrib(item.prfTaxRegime) }} </i>&nbsp;
-                | Vigência:         <i>{{ helpers.ConverterDataBr(dataVigencia) }}  </i>
+              Perfil ativo: <i>{{ item.prfApelido }} </i>&nbsp; | UF:
+              <i>{{ item.prfUF }} </i>&nbsp; | Atividade:
+              <i>{{ item.prfTypeCnae }} </i>&nbsp; | Reg.Tributário:
+              <i>{{ helpers.DefCaracTrib(item.prfTaxRegime) }} </i>&nbsp; |
+              Reg.Especial:
+              <i>{{ item.prfSpecialRegime ? item.prfSpecialRegime : "NÃO" }} </i
+              >&nbsp; | Vigência:
+              <i>{{ helpers.ConverterDataBr(dataVigencia) }} </i>.
             </span>
-        </li>
-      </ul>
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
   <!-- Modal Perfil -->
@@ -66,6 +95,7 @@
     role="dialog"
     aria-labelledby="TituloModalCentralizado"
     aria-hidden="true"
+    v-if="solution != 101"
   >
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
@@ -163,6 +193,7 @@ const Cnaes = helpers.getCnaes();
 
 const showEditValidtyModal = ref(false);
 const showTaxProfileModal = ref(false);
+import { onMounted } from "vue";
 
 const perfil = userStore.user.profile;
 const perfis = userStore.user.userProfile;
@@ -180,6 +211,7 @@ const DefinirDataVigencia = () => {
 
 const props = defineProps({
   multiplosPerfis: Boolean,
+  solution: Number,
 });
 </script>
 
@@ -187,9 +219,8 @@ const props = defineProps({
 .footer-info {
   position: relative;
   left: 15px !important;
-  top: -60px;
+  top: -40px;
   word-wrap: wrap;
-  /* border: 1px solid black; */
   max-width: 1000px;
 }
 
@@ -204,6 +235,7 @@ const props = defineProps({
 
 span {
   font-weight: normal;
+  font-size: small;
 }
 
 .actions {

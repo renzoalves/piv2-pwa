@@ -210,7 +210,7 @@ export default {
             comissao,
             outrasDespesas
         ) {
-            this.destinatarios = this.userStore.user.userRecipients;
+            this.destinatarios = this.userStore.user.userRecipients === null ? [] : this.userStore.user.userRecipients;
 
             if (Number(margemLiquida) <= 0) {
                 this.alertStore.error(

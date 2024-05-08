@@ -44,17 +44,21 @@
         <div class="top">
           <p :class="{ hide: collapse }" class="pages-title">Produtos</p>
 
-          <router-link class="geral-link" to="/gestor-tributario/consulta" title="GT Consultas">
+          <router-link
+            class="geral-link"
+            to="/gestor-tributario/consulta"
+            title="GT Consultas"
+          >
             <!-- <IconifyIcon icon="fluent-emoji-high-contrast:light-bulb" /> -->
             <!-- <IconifyIcon icon="material-symbols:barcode-reader-outline" /> -->
-            <IconifyIcon icon="ph:barcode-bold"/>
+            <IconifyIcon icon="ph:barcode-bold" />
 
             <transition appear @enter="fadeIn">
               <span v-if="!collapse">Gestor Tributário</span>
             </transition>
           </router-link>
 
-          <router-link class="geral-link" to="/moostri"  title="Moostri">
+          <router-link class="geral-link" to="/moostri" title="Moostri">
             <IconifyIcon icon="gravity-ui:tag-dollar" />
 
             <transition appear @enter="fadeIn">
@@ -70,7 +74,11 @@
             </transition>
           </router-link>
 
-          <router-link class="geral-link" to="/calculadora" title="Calculadora Tributária">
+          <router-link
+            class="geral-link"
+            to="/calculadora"
+            title="Calculadora Tributária"
+          >
             <IconifyIcon icon="ooui:mathematics" />
 
             <transition appear @enter="fadeIn">
@@ -78,23 +86,33 @@
             </transition>
           </router-link>
 
-          <!-- <router-link class="geral-link" to="/">
-            <IconifyIcon icon="fluent-emoji-high-contrast:light-bulb" />
+          <router-link
+            class="geral-link"
+            to="/gestor-integrado"
+            v-if="
+              userStore.user.idSolucaoIntegracao != '0' &&
+              userStore.user.hasAuth
+            "
+          >
+            <img
+              src="@/assets/images/gt-branco.png"
+              style="display: flex; align-items: center; height: 20px"
+            />
 
             <transition appear @enter="fadeIn">
               <span v-if="!collapse">Gestor Integrado</span>
             </transition>
-          </router-link> -->
+          </router-link>
         </div>
 
-        <div v-if="userStore.user.hasAuth" class="bottom">          
-          <router-link class="geral-link" to="/dashboard" title="Indicadores">
+        <div v-if="userStore.user.hasAuth" class="bottom">
+          <!-- <router-link class="geral-link" to="/dashboard" title="Indicadores">
             <IconifyIcon icon="lucide:layout-dashboard" />
 
             <transition appear @enter="fadeIn">
               <span v-if="!collapse">Indicadores</span>
             </transition>
-          </router-link>
+          </router-link> -->
 
           <button
             class="geral-link toggle-dropdown"
@@ -142,7 +160,11 @@
             </transition>
           </button>
 
-          <router-link class="geral-link" to="/minha-conta" title="Configurações">
+          <router-link
+            class="geral-link"
+            to="/minha-conta"
+            title="Configurações"
+          >
             <IconifyIcon icon="mdi:gear" />
 
             <transition appear @enter="fadeIn">
@@ -162,8 +184,11 @@
       <div class="divider"></div>
 
       <transition appear @enter="fadeIn">
-        <span v-if="!collapse" class="version">v2.0 - Termos e Condições</span>
-        <span v-else class="version" title="Versão do Sistema v2.0.20240314-1457" style="cursor: pointer;">v2.0.1</span>
+        <span v-if="!collapse" class="version">v2.1 - Termos e Condições</span>
+        <!-- <span v-else class="version" title="Versão do Sistema v2.0.20240312-1227" style="cursor: pointer;">v2.0</span> -->
+        <span v-else class="version" :title="versao_" style="cursor: pointer"
+          >v2.1</span
+        >
       </transition>
     </nav>
   </aside>
@@ -309,10 +334,11 @@ const openMenu = (menu) => {
     openDropdown.value = !openDropdown.value;
   }
 };
+
+const versao_ = import.meta.env.VITE_APP_VERSAO;
 </script>
 
 <style scoped lang="less">
-
 .tax-profile-wrapper {
   margin-top: 20px;
 }

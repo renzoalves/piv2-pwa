@@ -85,7 +85,7 @@ const helpers = {
   inputMasks: (input, mask) => {
     input = getMask[mask](input);
 
-    console.log(input);
+    // console.log(input);
 
     return input;
   },
@@ -94,7 +94,7 @@ const helpers = {
     const url = `${import.meta.env.VITE_APP_API_ENDPOINT
       }/UserSolutions?userID=${id}&sessionToken=${token}`;
 
-    console.log(url);
+    // console.log(url);
 
     try {
       await axios.get(url).then((response) => {
@@ -294,7 +294,7 @@ const helpers = {
 
       for (let i = 0; i < words.length; i++) {
         let w = words[i];
-        words[i] = w[0].toUpperCase() + w.slice(1);
+        words[i] = w === "" ? "" : w[0].toUpperCase() + w.slice(1);
       }
 
       return words.join(" ");
@@ -394,15 +394,17 @@ const helpers = {
     let user = useAuthStore().user;
 
     let log = new Object();
-    log.logIdUser = "1108";
     log.logAction = acao;
     log.logPage = pagina;
     log.logMethod = metodo;
     log.logReturn = retorno;
     log.logAPI = api;
+    log.logIp = (localStorage.getItem('cidade')) ? localStorage.getItem('cidade') : user.city;
 
     if (user.userId) {
       log.logIdUser = user.userId;
+    } else {
+      log.logIdUser = 1108;
     }
 
     if (jsonEnvio != null) {
@@ -412,9 +414,8 @@ const helpers = {
     let url = RetUrlAPI() + "SaveLog";
 
     CallPostAsync("usuario", "", url, log)
-      .then((data) => {})
+      .then((data) => { })
       .catch((reason) => {
-        console.log(reason);
       });
   },
 
@@ -454,7 +455,7 @@ const helpers = {
 
     CallPostAsync("usuario", token, url, email)
       .then((data) => {
-        console.log(data);
+        // console.log(data);
         if (data.messageToReturn == "OK") {
           let dadosEmail = new Object();
           dadosEmail.token = data.token;
@@ -471,7 +472,6 @@ const helpers = {
         alertStore.error(
           "Não foi possível estabelecer conexão com o servidor."
         );
-        console.log(reason);
       });
 
     return token;
@@ -500,7 +500,8 @@ const helpers = {
       userStore.user = { hasAuth: false };
 
       if (direcionarParaLogin) {
-        router.push("/");
+        // router.push("/login");
+        document.location.href = "/login";
         return;
       }
     }
@@ -522,6 +523,12 @@ const helpers = {
 
   ConverterDataBr(data) {
     return data.split("-").reverse().join("/");
+  },
+
+  FormatarMoeda(valor, nroCasasDecimais) {
+    let decimais = (nroCasasDecimais) ? nroCasasDecimais : 2;
+    let valorAux = (valor / 1).toFixed(decimais).replace(",", ".");
+    return valorAux.toString().replace(/\B(?=(\d{decimais})+(?!\d))/g, ".");
   },
 
   VerificarAcessos(idSolucao) {
@@ -800,6 +807,9 @@ const helpers = {
     });
 
     return ncmMascarado;
+  },
+  FormataNumeroPontos(valor) {
+    return valor.toLocaleString('pt-BR');
   },
   HoraAtual(dataCompleta = false) {
     let dtHoje = new Date();

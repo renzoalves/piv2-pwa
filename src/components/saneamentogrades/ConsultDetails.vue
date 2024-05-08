@@ -64,7 +64,7 @@
                 href="#pmpf"
                 role="tab"
                 aria-controls="settings"
-                >PMPF</a
+                >Pauta (R$)</a
               >
             </li>
 
@@ -504,7 +504,7 @@
               </table>
             </div>
 
-            <!-- PMPF -->
+            <!-- Pauta -->
             <div class="tab-pane" id="pmpf" role="tabpanel">
               <br />
               <br />
@@ -515,28 +515,42 @@
                 <thead>
                   <th scope="col">Descrição</th>
                   <th scope="col">PMPF</th>
+                  <th scope="col">PF</th>
+                  <th scope="col">PMC</th>
                 </thead>
                 <tbody>
                   <tr>
-                    <th>Trava(%)</th>
-                    <td v-if="p_detalhes.pmpf.pTrava">
-                      {{ p_detalhes.pmpf.pTrava }}
+                    <th>Preço</th>
+                    <td v-if="p_detalhes.pmpf.vPmpf">
+                      {{ "R$ " + p_detalhes.pmpf.vPmpf.toFixed(2) }}
                     </td>
                     <td v-else>-</td>
+                    <td v-if="p_detalhes.pf.pf">
+                      {{ "R$ " + p_detalhes.pf.pf.toFixed(2) }}
+                    </td>
+                    <td v-else>-</td>
+                    <td v-if="p_detalhes.pc.pmc">
+                      {{ "R$ " + p_detalhes.pc.pmc.toFixed(2) }}
+                    </td>
+                    <td v-else>-</td>
+                  </tr>
+                  <tr>
+                    <th>Trava(%)</th>
+                    <td v-if="p_detalhes.pmpf.pTrava">
+                      {{ p_detalhes.pmpf.pTrava.toFixed(2) }}
+                    </td>
+                    <td v-else>-</td>
+                    <td>-</td>
+                    <td>-</td>
                   </tr>
                   <tr>
                     <th>Trava Ajust.(%)</th>
                     <td v-if="p_detalhes.pmpf.pTravaAjust">
-                      {{ p_detalhes.pmpf.pTravaAjust }}
+                      {{ p_detalhes.pmpf.pTravaAjust.toFixed(2) }}
                     </td>
                     <td v-else>-</td>
-                  </tr>
-                  <tr>
-                    <th>PMPF(%)</th>
-                    <td v-if="p_detalhes.pmpf.vPmpf">
-                      {{ p_detalhes.pmpf.vPmpf }}
-                    </td>
-                    <td v-else>-</td>
+                    <td>-</td>
+                    <td>-</td>
                   </tr>
                   <tr>
                     <th>Múltiplo</th>
@@ -544,6 +558,8 @@
                       {{ p_detalhes.pmpf.vMultiplo }}
                     </td>
                     <td v-else>-</td>
+                    <td>-</td>
+                    <td>-</td>
                   </tr>
                   <tr>
                     <th>Vigência Inicial</th>
@@ -551,6 +567,8 @@
                       {{ p_detalhes.pmpf.dtVigenciaInicial }}
                     </td>
                     <td v-else>-</td>
+                    <td>-</td>
+                    <td>-</td>
                   </tr>
                   <tr>
                     <th>Vigência Final</th>
@@ -558,7 +576,9 @@
                       {{ p_detalhes.pmpf.dtVigenciaFinal }}
                     </td>
                     <td v-else>-</td>
-                  </tr>
+                    <td>-</td>
+                    <td>-</td>
+                  </tr>                  
                 </tbody>
               </table>
 
@@ -571,6 +591,21 @@
                 <tbody>
                   <tr>
                     <td v-if="p_detalhes.pmpf.amparoLegal">{{ p_detalhes.pmpf.amparoLegal }}</td>
+                    <td v-else>-</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <table
+                class="table table-divider table-striped table-sm table-responsive-lg table-bordered"
+              >
+                <thead>
+                  <th>Registro</th>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td v-if="p_detalhes.pf.registro">{{ p_detalhes.pf.registro }}</td>
+                    <td v-else-if="p_detalhes.pc.registro">{{ p_detalhes.pc.registro }}</td>
                     <td v-else>-</td>
                   </tr>
                 </tbody>

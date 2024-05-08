@@ -1,11 +1,23 @@
 import axios from "axios";
 import router from "@/router/index";
-import { defineStore } from "pinia";
-import { useAlertStore } from "@/stores";
-import { useStorage } from "@vueuse/core";
-import { RetUrlAPI } from "@/helpers/axios.js";
-import { CallPostAsync } from "@/helpers/axios.js";
-import { CallGetAsync } from "@/helpers/axios.js";
+import {
+  defineStore
+} from "pinia";
+import {
+  useAlertStore
+} from "@/stores";
+import {
+  useStorage
+} from "@vueuse/core";
+import {
+  RetUrlAPI
+} from "@/helpers/axios.js";
+import {
+  CallPostAsync
+} from "@/helpers/axios.js";
+import {
+  CallGetAsync
+} from "@/helpers/axios.js";
 import notifications from "@/helpers/notifications.js";
 import helpers from "@/helpers";
 
@@ -16,14 +28,17 @@ export const useAuthStore = defineStore("user", {
   // utilizando o VueUse para isso, o estado se mantém reativo, atualizando na sessionStorage sempre que alterado no state
 
   state: () => ({
-    user: useStorage("user", { hasAuth: false }, sessionStorage),
+    user: useStorage("user", {
+      hasAuth: false
+    }, sessionStorage),
   }),
 
   actions: {
+
+    // Login
     async signIn(email, password) {
       let alertStore = useAlertStore();
-      // let city = this.pegarDadosIp();
-      let city = "";
+      let city = localStorage.getItem('cidade');
       let perfis = [];
 
       let url = RetUrlAPI() + "Login";
@@ -39,20 +54,25 @@ export const useAuthStore = defineStore("user", {
       return new Promise((resolve, reject) => {
         CallPostAsync("usuario", "", url, login)
           .then(async (data) => {
+
             let user = new Object();
+
             if (data == null) {
               alertStore.error("Retorno nulo do serviço!");
+
             } else if (data["messageToReturn"] != "OK") {
               alertStore.error(data);
-            } else {
-              user = data;
 
+            } else {
+
+              user = data;
               user.hasAuth = true;
 
               perfis = this.definePerfis(user.userProfile);
 
               user.userProfile = perfis;
               user.profile = this.definePerfilPrincipal(perfis);
+              user.city = '';
 
               user.dataQueries = DadosConsulta;
 
@@ -61,20 +81,24 @@ export const useAuthStore = defineStore("user", {
               }
 
               this.user = user;
+
+              // this.pegarDadosIp();
               this.salvarTokenSessao();
             }
+
             resolve(user);
           })
           .catch((reason) => {
             alertStore.error(reason);
             reject(reason);
-            console.log(reason);
           });
       });
     },
 
     signOut() {
-      this.user = { hasAuth: false };
+      this.user = {
+        hasAuth: false
+      };
       router.push("/");
     },
 
@@ -88,21 +112,26 @@ export const useAuthStore = defineStore("user", {
         Perfil = {};
 
         Perfil.hasProfile = true;
-        Perfil.prfId = linha.profileId;
-        Perfil.prfApelido = linha.apelido;
-        Perfil.prfDtUltRec = linha.dtUltRec;
-        Perfil.prfTaxRegime = linha.taxRegime;
-        Perfil.prfTypeCnae = linha.typeCnae;
-        Perfil.prfUF = linha.uf;
-        Perfil.prfRecBruta = linha.recBruta.replace(",", ".");
-        Perfil.prfCfop = linha.cfop;
-        Perfil.prfSpecialRegime = linha.specialRegime;
-        Perfil.prfPrincipal = linha.principal;
-        Perfil.prfIndex = index;
+        Perfil.prfId = linha.profileId;                               // 4597
+        Perfil.prfApelido = linha.apelido;                            // VENDAS NORMAL
+        Perfil.prfDtUltRec = linha.dtUltRec;                          // 08/04/2024
+        Perfil.prfTaxRegime = linha.taxRegime;  // 1
+        Perfil.prfTypeCnae = linha.typeCnae;  // VAREJO
+        Perfil.prfUF = linha.uf;  // SP
+        Perfil.prfRecBruta = linha.recBruta.replace(",", ".");  // 0
+        Perfil.prfCfop = linha.cfop;  // 5102
+        Perfil.prfSpecialRegime = linha.specialRegime;  // ""
+        Perfil.prfPrincipal = linha.principal;  // FALSE
+        Perfil.prfIndex = index;  // 
 
-        if (Perfil.prfDtUltRec.length > 10) {
+        if( Perfil.prfSpecialRegime === "" ) 
+          Perfil.prfSpecialRegime = "NÃO";
+
+        if( !Perfil.prfPrincipal && perfis.length <= 1 ) 
+          Perfil.prfPrincipal = true;
+
+        if (Perfil.prfDtUltRec.length > 10)
           Perfil.prfDtUltRec = Perfil.prfDtUltRec.substring(0, 10);
-        }
 
         Perfis.push(Perfil);
       });
@@ -191,7 +220,9 @@ export const useAuthStore = defineStore("user", {
 
               codigoCliente = data.substring(3, data.length);
 
-              this.user = { userId: codigoCliente };
+              this.user = {
+                userId: codigoCliente
+              };
 
               if (cadSimplificado) {
                 helpers.GravarLog(
@@ -238,7 +269,6 @@ export const useAuthStore = defineStore("user", {
         .catch((reason) => {
           this.processando = false;
           alertStore.error(reason);
-          console.log(reason);
         });
     },
 
@@ -264,24 +294,28 @@ export const useAuthStore = defineStore("user", {
       });
     },
 
-    pegarDadosIp() {
-      let url = "https://iplist.cc/api";
+    async pegarDadosIp() {
+      // let url = "https://iplist.cc/api";
+      // let url = "https://api64.ipify.org/";
+      let url = "https://jsonip.com/";
 
-      CallGetAsync(url, false).then((data) => {
+      await CallGetAsync(url, false).then((data) => {
         if (data != null) {
-          return data.city;
+          // return data.city;
+          localStorage.setItem('cidade', data.ip);
+          return data.ip;
         }
       });
     },
 
-    verificarEmail(_email) {
+    verificarEmail(user) {
       let alertStore = useAlertStore();
 
       let url = RetUrlAPI() + "NewSessionToken";
       let token = "";
       let email = new Object();
 
-      email.destinationEmail = _email;
+      email.DestinationEmail = user.mail;
 
       CallPostAsync("usuario", token, url, email)
         .then((data) => {
@@ -289,7 +323,7 @@ export const useAuthStore = defineStore("user", {
             let dadosEmail = new Object();
             dadosEmail.token = data.token;
             dadosEmail.dataHora = data.dateHour;
-            dadosEmail.destinationEmail = email.destinationEmail;
+            dadosEmail.destinationEmail = user.mail;
             dadosEmail.nome = this.usrNome;
             dadosEmail.senha = this.getSenhaAleatoria();
 
@@ -299,27 +333,18 @@ export const useAuthStore = defineStore("user", {
           } else {
             this.processando = false;
             alertStore.error(
-              "Ocorreu um erro durante a operação, por favor tente novamente!"
+              "Ocorreu um erro durante a operação de verificação de E-mail, por favor tente novamente!"
             );
           }
         })
         .catch((reason) => {
           this.processando = false;
-          alertStore.error(
-            "Não foi possível estabelecer conexão com o servidor."
-          );
+          alertStore.error("Não foi possível estabelecer conexão com o servidor ao validar a Verificação de E-mail.");
         });
     },
 
     gravarTokenDeAutenticacao(dadosEmail) {
-      let url =
-        RetUrlAPI() +
-        "RequestEmailValidation?token=" +
-        dadosEmail.token +
-        "&data=" +
-        dadosEmail.senha +
-        "&inf=" +
-        dadosEmail.dataHora;
+      let url = RetUrlAPI() + "RequestEmailValidation?token=" + dadosEmail.token + "&data=" + dadosEmail.senha + "&inf=" + dadosEmail.dataHora;
 
       this.processando = true;
 
@@ -327,13 +352,14 @@ export const useAuthStore = defineStore("user", {
       CallGetAsync(url, false)
         .then((data) => {
           var t = "m";
+          helpers.EnviarEmail(7, dadosEmail.destinationEmail, dadosEmail);
+
           this.processando = false;
         })
         .catch((reason) => {
           this.processando = false;
         });
 
-      helpers.EnviarEmail(7, dadosEmail.destinationEmail, dadosEmail);
 
       this.processando = false;
     },
@@ -352,5 +378,72 @@ export const useAuthStore = defineStore("user", {
 
       return pwd;
     },
+
+    alterarSenha(senha, confirmarSenha) {
+      let alertStore = useAlertStore();
+
+      if (senha == confirmarSenha) {
+        var auxDados = this.obterDados();
+        var user = new Object();
+
+        user.email = auxDados.token.replace('%20', '+').replace('%20', '+') + "=";
+        user.password = senha;
+        user.confirmPassword = confirmarSenha;
+        user.dateHour = auxDados.inf.replace('%20', '+').replace('%20', '+') + "=";
+        user.forgotPassword = 'S';
+
+        let url = RetUrlAPI() + 'AlterPassword';
+        let token = ""
+
+        CallPostAsync("usuario", token, url, user)
+          .then(data => {
+            if (data == "OK") {
+
+              helpers.GravarLog("Alterou a senha", "user.js", "AlterPassword", "", null, "portal");
+              alertStore.success("Senha alterada com sucesso.");
+
+            } else {
+              alertStore.error(data["message"]);
+            }
+          })
+          .catch(reason => {
+            alertStore.error(reason);
+          });
+      } else {
+        alertStore.error("As senhas não conferem!");
+        return;
+      }
+    },
+
+    // Método para obter dados da url
+    obterDados() {
+      // Pegar a url e depois quebrar token(email) e inf(token + dataHora)
+      // var query = window.location.search.slice(1);
+      // var partes = query.split('&');
+      // var data = {};
+      // partes.forEach(function (parte) {
+      //   var chaveValor = parte.split('=');
+      //   var chave = chaveValor[0];
+      //   var valor = chaveValor[1];
+      //   data[chave] = valor;
+      // });
+
+      var query = window.location.pathname;
+      query = query.substring(9);
+
+      var partes = query.split('=');
+      var data = new Object();
+
+      data.token = partes[0];
+      data.inf = partes[1].substring(1);
+
+      return data;
+    },
+
   },
+
+  created() {
+    this.PegarDadosIp();
+  },
+
 });

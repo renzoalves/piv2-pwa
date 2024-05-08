@@ -43,6 +43,7 @@
         id="valor"
         v-bind:placeholder="'Informe ' + DescricaoTxtValor(criterio)"
         v-on:keyup.enter="Consult(valor, criterio, exIPI)"
+        name="input-consulta"
       />
       <div id="lupa" v-on:click="Consult(valor, criterio, exIPI)">
         <i class="fa fa-search lupa"></i>
@@ -142,6 +143,7 @@
             <th class="fontSteel">AD REM ICMS</th>
             <th class="fontSteel">ICMS (%)</th>
             <th class="fontSteel">Redução ICMS (%)</th>
+            <th class="fontSteel">ICMS PDV (%)</th>
             <th class="fontSteel">IVA (%)</th>
             <th class="fontSteel">Amparo Legal</th>
           </tr>
@@ -169,6 +171,10 @@
             <td class="tableexport-string">
               {{ i.icms.redBcIcms.toFixed(2) }}
             </td>
+            <td class="tableexport-string" v-if="i.pdv && i.pdv.aliqIcmsPdv">
+              {{ i.pdv.aliqIcmsPdv.toFixed(2) }}
+            </td>
+            <td class="tableexport-string" v-else>0.00</td>
             <td class="tableexport-string">{{ i.icms.iva.toFixed(2) }}</td>
             <td class="tableexport-string">
               {{ RetornarAmparoLegal(index) }}
@@ -180,6 +186,7 @@
       <table
         class="table table-divider table-striped table-sm table-responsive-lg tableFixHead table-bordered"
         id="tabelaPrincipal"
+        name="tabela-gt-consulta"
       >
         <thead>
           <tr>
@@ -451,7 +458,8 @@
                   OrganizarNavegacao();
                 "
                 href="#"
-                ><i class="fas fa-angle-double-left"></i>
+              >
+                <i class="fas fa-angle-double-left"></i>
               </a>
             </li>
 
@@ -463,9 +471,11 @@
                   OrganizarNavegacao();
                 "
                 href="#"
-                ><i class="fas fa-angle-left"></i
-              ></a>
+              >
+                <i class="fas fa-angle-left"></i>
+              </a>
             </li>
+
             <li
               v-for="item in paginaNavegacao"
               class="page-item"
@@ -478,6 +488,7 @@
             >
               <a class="page-link" href="#">{{ item }}</a>
             </li>
+
             <li
               class="page-item"
               v-if="pagina < qtdePaginas"
@@ -486,10 +497,11 @@
                 OrganizarNavegacao();
               "
             >
-              <a class="page-link" href="#"
-                ><i class="fas fa-angle-right"></i
-              ></a>
+              <a class="page-link" href="#">
+                <i class="fas fa-angle-right"></i>
+              </a>
             </li>
+
             <li
               class="page-item"
               v-if="qtdePaginas > 1 && pagina < qtdePaginas"
@@ -498,13 +510,14 @@
                 OrganizarNavegacao();
               "
             >
-              <a class="page-link" href="#"
-                ><i class="fas fa-angle-double-right"></i
-              ></a>
+              <a class="page-link" href="#">
+                <i class="fas fa-angle-double-right"></i>
+              </a>
             </li>
           </ul>
         </nav>
       </div>
+
       <div class="col-md-3 col-lg-2 mt-3">
         <input
           type="number"
@@ -999,6 +1012,13 @@ export default {
         // acesso = "OK";
       }
 
+      // if( userStore.user.dataQueries.consultas ){
+      //   if( !userStore.user.hasAuth && ( !userStore.user.userId || userStore.user.userId <= 0 ) && this.consultas >= 5 ){
+      //     this.alertStore.error('Você excedeu o número de consultas sem efetuar Login.');
+      //     return;
+      //   }
+      // }
+
       if (acesso) {
         this.PegarValoresPerfil();
         this.LimparListas();
@@ -1027,11 +1047,9 @@ export default {
           }
 
           let rootObject = this.GerarObjetoEnvio(valor.trim(), criterio);
-
           if (rootObject == null) return;
 
           this.totalEnviados = rootObject.products.length;
-
           this.processando = true;
 
           CallPostAsync("usuario", "", url, rootObject)
@@ -1096,6 +1114,17 @@ export default {
 
                 this.PaginarTabela();
 
+                if (localStorage.getItem("cidade") && !userStore.user.city) {
+                  helpers.GravarLog(
+                    localStorage.getItem("cidade"),
+                    "consultatributos.html",
+                    "Consult",
+                    "CONSULTA SEM LOGIN",
+                    null,
+                    "portal"
+                  );
+                }
+
                 helpers.GravarLog(
                   "Consultou - " + criterio + " : " + valor,
                   "consultatributos.html",
@@ -1106,7 +1135,6 @@ export default {
                 );
               } else {
                 this.processando = false;
-
                 this.itens.products = [];
 
                 mensagemRetorno = reason;
@@ -1161,6 +1189,7 @@ export default {
         });
       }
     },
+
     ConsultaLoteCodigo(txtLote, dataLote, emailLote) {
       this.consLote = txtLote;
       this.auxConsLote = txtLote;
@@ -1228,6 +1257,10 @@ export default {
         cHeader.email = userStore.user.mail;
         cHeader.clientStatus = userStore.user.userStatus;
         cHeader.clientCnpjCpf = userStore.user.clientCnpjCpf;
+        cHeader.ip =
+          localStorage.getItem("cidade") && !userStore.user.city
+            ? localStorage.getItem("cidade")
+            : userStore.user.city;
 
         cHeader.clientBehavior = userStore.user.clientBehavior;
         cHeader.partnerBehavior = userStore.user.partnerBehavior;
@@ -1277,6 +1310,7 @@ export default {
 
               if (!data.products) {
                 let objConfigAux = new Object();
+
                 objConfigAux.textoBotao = "Editar Plano";
                 objConfigAux.urlRedirect = "/pages/contratos.html?19";
                 objConfigAux.urlTarget = "_self";
@@ -1401,8 +1435,8 @@ export default {
 
         this.processando = false;
       }
-      //-----------------------------------------------------------------------------------------------------------------------------------------------------------
     },
+
     ConsultaLoteNCM(txtLote) {
       this.consLote = txtLote;
       this.auxConsLote = txtLote;
@@ -1411,6 +1445,7 @@ export default {
       this.chave++;
       this.consultaNCM = true;
     },
+
     GerarObjetoEnvio(
       valor,
       criterio,
@@ -1433,6 +1468,10 @@ export default {
         cHeader.clientCnpjCpf = userStore.user.clientCnpjCpf;
         cHeader.userID = userStore.user.userId;
         cHeader.specialRegime = userStore.user.profile.prfSpecialRegime;
+        cHeader.ip =
+          localStorage.getItem("cidade") && !userStore.user.city
+            ? localStorage.getItem("cidade")
+            : userStore.user.city;
 
         cHeader.managerId = userStore.user.idGestor;
         cHeader.managerEmail = userStore.user.emailGestor;
@@ -1451,6 +1490,7 @@ export default {
             cHeader.consultType = 1;
             cHeader.batch = false;
             break;
+
           case "DESCRICAO":
             objProduto.description = valor;
             objProduto.cest = this.cest.replaceAll(".", "");
@@ -1464,6 +1504,7 @@ export default {
               cHeader.consultTypeFilter = 3;
             }
             break;
+
           case "CODIMENDES":
             objProduto.code = valor;
             objProduto.ruleCode = codRegra;
@@ -1471,6 +1512,7 @@ export default {
             cHeader.consultType = 2;
             cHeader.batch = false;
             break;
+
           case "LOTE":
             objProduto.code = valor;
             cHeader.consultType = 2;
@@ -1548,10 +1590,10 @@ export default {
         this.alertStore.error(
           "Erro ao formar lista de retorno para Consulta de Produtos em Lote."
         );
-
         return null;
       }
     },
+
     AtualizarDadosConsultaNCM(ncm, exIPI) {
       this.ncm = ncm.trim().replaceAll(".", "");
       this.exIPI = exIPI;
@@ -1559,6 +1601,7 @@ export default {
       this.consultaNCM = true;
       this.tipoConsulta = 2;
     },
+
     DescricaoTxtValor(criterio) {
       switch (criterio) {
         case "GTIN":
@@ -1571,6 +1614,7 @@ export default {
           return "a NCM";
       }
     },
+
     RetornarAmparoLegal(index) {
       let amparos = this.itens.products[index].icms.lawGrounds;
       let retorno = "";
@@ -1583,6 +1627,7 @@ export default {
 
       return retorno;
     },
+
     PegarValoresPerfil() {
       this.recBruta = userStore.user.profile.prfRecBruta;
       this.uf = userStore.user.profile.prfUF;
@@ -1592,6 +1637,7 @@ export default {
       if (userStore.user.profile.prfValidity)
         this.dataVigencia = userStore.user.profile.prfValidity;
     },
+
     LimparListas() {
       this.objPISCOFINS = [];
       this.objICMS = [];
@@ -1599,6 +1645,7 @@ export default {
       this.objPDV = [];
       this.objNCM = [];
     },
+
     // Histórico
     AtualizarDadosBotoesHistorico(val, cest) {
       let item = _.find(this.botoesHistorico, function (aux) {
@@ -1618,6 +1665,7 @@ export default {
 
       userStore.user.historic = JSON.stringify(this.botoesHistorico);
     },
+
     LerHistoricoPesquisa() {
       if (!userStore.user.historic) return;
 
@@ -1629,12 +1677,14 @@ export default {
         this.botoesHistorico.push(item);
       });
     },
+
     ExcluirComponente(key) {
       this.botoesHistorico = _.remove(this.botoesHistorico, function (n) {
         return n.key != key;
       });
       userStore.user.historic = JSON.stringify(this.botoesHistorico);
     },
+
     ExportarAlterado(item, ncmIndividual) {
       if (ncmIndividual != "")
         this.AtualizarDadosBotoesHistorico(ncmIndividual);
@@ -1644,6 +1694,7 @@ export default {
 
       this.tipoExportacao = 0;
     },
+
     ConsultDetails(
       codIMendes,
       ctrib,
@@ -1822,6 +1873,7 @@ export default {
         }
       }
     },
+
     Paginacao(itens) {
       let pagina = this.pagina;
       let qtdeLinhas = this.limite;
@@ -1881,7 +1933,6 @@ export default {
     },
 
     /* Exportação */
-
     RetornarExportacao() {
       switch (this.tipoExportacao) {
         case 0:
@@ -1946,6 +1997,7 @@ export default {
           element.icms.adRemICMS,
           element.icms.aliqIcms.toFixed(2),
           element.icms.redBcIcms.toFixed(2),
+          element.pdv.aliqIcmsPdv.toFixed(2),
           element.icms.iva.toFixed(2),
           amparoLegal,
         ]);
@@ -1967,6 +2019,7 @@ export default {
           "AD REM ICMS",
           "ICMS(%)",
           "REDUÇÃO ICMS(%)",
+          "ICMS PDV(%)",
           "IVA(%)",
           "Amparo Legal",
         ],
@@ -2040,6 +2093,9 @@ export default {
           halign: "right",
         },
         12: {
+          halign: "right",
+        },
+        13: {
           halign: "left",
         },
       };
@@ -2047,14 +2103,14 @@ export default {
       if (!this.mostrarSimples) {
         columns[8].halign = "right";
         columns[11].halign = "left";
-        delete columns[12];
+        delete columns[13];
       }
 
       if (!this.mostrarAtividade) {
-        if (columns[12] != undefined) {
+        if (columns[13] != undefined) {
           columns[10].halign = "right";
           columns[11].halign = "left";
-          delete columns[12];
+          delete columns[13];
         } else {
           columns[7].halign = "right";
           columns[9].halign = "right";
@@ -2266,6 +2322,12 @@ export default {
           "\n";
       });
 
+      if (!this.itens.productsNotFound) this.itens.productsNotFound = [];
+
+      for (let index = 0; index < this.itens.productsNotFound.length; index++) {
+        this.consLote += this.itens.productsNotFound[index] + ";;\n";
+      }
+
       // Código ou Descrição
       if (tipo == 1 || tipo == 4) {
         if (tipo == 1) {
@@ -2382,6 +2444,7 @@ export default {
       }
     },
   },
+
   created() {
     if (userStore.user.hasAuth) {
       this.criterios.push({
@@ -2389,15 +2452,18 @@ export default {
       });
     }
   },
+
   mounted() {
     if (userStore.user.mainSearch) this.SetupPesqDescricao();
     this.LerHistoricoPesquisa();
   },
+
   computed: {
     Paginar() {
       if (this.itens.products) {
         return this.Paginacao(this.itens.products);
       }
+      return [];
     },
 
     ListaHistorico() {
@@ -2405,6 +2471,7 @@ export default {
       return this.botoesHistorico;
     },
   },
+
   watch: {
     // Verificar se a pagina é menor que a quantidade total, ou se a página é igua a '...'
     pagina: function (newPage, lastPage) {

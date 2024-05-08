@@ -14,8 +14,9 @@ const api = axios.create({
 export default api;
 
 export function RetUrlAPI(metodo, versaoAPI) {
-  let modo = 2;
+  let modo = 1; //0=Dev, 1=QA, 2=PROD
   let urlRetorno = "";
+  let versao = (versaoAPI) ? versaoAPI : 'v2';
 
   let url_EnviaRecebeDados_prod = true;
   let url_EnviaRecebeDados_qa = false;
@@ -37,14 +38,26 @@ export function RetUrlAPI(metodo, versaoAPI) {
   let url_Moostri_qa = false;
   let url_Moostri_dev = false;
 
-  let url_Integracoes_prod = true;
-  let url_Integracoes_qa = false;
+  let url_Integracoes_prod = false;
+  let url_Integracoes_qa = true;
   let url_Integracoes_dev = false;
 
   switch (metodo) {
 
     case 'Integracoes':
-      let versao = (versaoAPI) ? versaoAPI : 'v2';
+
+      if (url_Integracoes_dev)
+        urlRetorno = 'https://consultatributos.com.br:8443/envia_recebe_dados/' + versao + '/portal/';
+
+      if (url_Integracoes_qa)
+        urlRetorno = 'https://consultatributos.com.br:8443/QA/envia_recebe_dados/' + versao + '/portal/';
+
+      if (url_Integracoes_prod)
+        urlRetorno = 'https://consultatributos.com.br:8443/envia_recebe_dados/' + versao + '/portal/';
+
+      break;
+
+    case 'EnviaRecebeDadosIntegracoes':
 
       if (url_Integracoes_dev)
         urlRetorno = 'https://consultatributos.com.br:8443/envia_recebe_dados/' + versao + '/integracao/';
@@ -56,6 +69,35 @@ export function RetUrlAPI(metodo, versaoAPI) {
         urlRetorno = 'https://consultatributos.com.br:8443/envia_recebe_dados/' + versao + '/integracao/';
 
       break;
+
+    case 'integra-sankhya':
+
+      if (url_Integracoes_dev)
+        urlRetorno = 'https://10.0.0.228:8443/sankhya/v1/portal/';
+
+      if (url_Integracoes_qa)
+        urlRetorno = 'https://consultatributos.com.br:8443/QA/sankhya/v1/portal/';
+
+      if (url_Integracoes_prod)
+        urlRetorno = 'https://consultatributos.com.br:8443/sankhya/v1/portal/';
+
+      // urlRetorno = 'https://consultatributos.com.br:8443/sankhya/v1/portal/';
+      break;
+
+    case 'integra-bluesoft':
+
+      if (url_Integracoes_dev)
+        urlRetorno = 'https://10.0.0.228:8443/bluesoft/v1/portal/';
+
+      if (url_Integracoes_qa)
+        urlRetorno = 'https://10.0.0.228:8443/bluesoft/v1/portal/';
+
+      if (url_Integracoes_prod)
+        urlRetorno = 'https://10.0.0.228:8443/bluesoft/v1/portal/';
+
+      urlRetorno = 'https://consultatributos.com.br:8443/bluesoft/v1/portal/';
+      break;
+
 
     case "EnviaRecebeDados":
       if (url_EnviaRecebeDados_prod)
@@ -107,10 +149,10 @@ export function RetUrlAPI(metodo, versaoAPI) {
 
     case "Moostri":
       if (url_Moostri_prod)
-        urlRetorno = "http://consultatributos.com.br:8080/moostri-api-hom/v1/";
+        urlRetorno = "https://consultatributos.com.br:8443/moostri-api/v1/";
 
       if (url_Moostri_qa)
-        urlRetorno = "http://consultatributos.com.br:8080/moostri-api-hom/v1/";
+        urlRetorno = "https://consultatributos.com.br:8443/moostri-api-hom/v1/";
 
       if (url_Moostri_dev)
         urlRetorno = "https://localhost:44343/v1/";
@@ -118,7 +160,8 @@ export function RetUrlAPI(metodo, versaoAPI) {
       break;
 
     default:
-      if (modo == 0) urlRetorno = "http://localhost:9999/v1/public/";
+      if (modo == 0)
+        urlRetorno = "http://localhost:9999/v1/public/";
 
       if (modo == 1)
         urlRetorno = "https://consultatributos.com.br:8443/QA/portal_imendes/v1/public/";
@@ -132,7 +175,7 @@ export function RetUrlAPI(metodo, versaoAPI) {
   return urlRetorno;
 }
 
-export async function CallPostAsync( user, pwd, url, objeto, apiSaneamento = false, bearerToken = "" ) {
+export async function CallPostAsync(user, pwd, url, objeto, apiSaneamento = false, bearerToken = "") {
   let dadosUsuario = useAuthStore().user;
   let headers = {};
   let pwdSan = pwd;
@@ -141,8 +184,8 @@ export async function CallPostAsync( user, pwd, url, objeto, apiSaneamento = fal
 
   if (!apiSaneamento) {
 
-    if(bearerToken.length > 0) {
-      
+    if (bearerToken.length > 0) {
+
       headers = {
         method: "POST",
         url: url,
@@ -154,10 +197,10 @@ export async function CallPostAsync( user, pwd, url, objeto, apiSaneamento = fal
           userID: dadosUsuario.userId,
           origem: "portal",
           Authorization: "Bearer " + bearerToken
-          },
+        },
         data: JSON.stringify(objeto),
       };
-    
+
     } else {
       headers = {
         method: "POST",
@@ -172,7 +215,7 @@ export async function CallPostAsync( user, pwd, url, objeto, apiSaneamento = fal
         },
         data: JSON.stringify(objeto),
       };
-      
+
     }
 
   } else {
@@ -199,7 +242,6 @@ export async function CallPostAsync( user, pwd, url, objeto, apiSaneamento = fal
     let response = await axios.post(url, objeto, headers);
     return response.data;
   } catch (error) {
-    console.log(error);
     if (error.response && error.response.data) {
       return error.response.data;
     }
@@ -240,18 +282,15 @@ export async function CallGetAsync(url, enviarToken = true) {
   let headers = {};
 
   if (enviarToken) {
-    headers = {
-      tokenSession: dadosUsuario.tokenSession,
-      userID: dadosUsuario.userId,
-      email: dadosUsuario.mail,
-    };
+    headers.tokenSession = dadosUsuario.tokenSession;
+    headers.userID = dadosUsuario.userId;
+    headers.email = dadosUsuario.mail;
   }
 
   try {
-    let response = await axios.get(url, headers);
+    let response = await axios.get(url, { headers });
     return response.data;
   } catch (error) {
-    console.log(error);
     throw "Servidor Indisponível.";
   }
 }

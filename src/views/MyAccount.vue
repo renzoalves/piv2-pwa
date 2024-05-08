@@ -299,11 +299,12 @@
                             <th>Nome</th>
                             <th class="text-center">UF</th>
                             <th class="text-center">Atividade</th>
-                            <th class="text-center">Regime Tributário</th>
+                            <th class="text-center" title="Regime Tributário." style="cursor: pointer">Reg. Tributário</th>
+                            <th class="text-center" title="Regime Especial." style="cursor: pointer">Reg. Especial</th>
                             <th class="text-center">CFOP</th>
                             <th class="text-center">Receita Bruta (R$)</th>
-                            <th class="text-center">Dt. Últ. Atualização</th>
-                            <th class="text-center">Data Vigência</th>
+                            <th class="text-center" title="Data da última atualização." style="cursor: pointer">Dt. Atualização</th>
+                            <th class="text-center" title="Data de Vigência a ser considerada." style="cursor: pointer">Dt. Vigência</th>
                             <th class="text-center">Ações</th>
                         </tr>
                     </thead>
@@ -316,6 +317,7 @@
                             <td class="text-center">{{ i.prfUF }}</td>
                             <td class="text-center">{{ i.prfTypeCnae }}</td>
                             <td class="text-center">{{ DefCaracTrib(i.prfTaxRegime) }}</td>
+                            <td class="text-center">{{ i.prfSpecialRegime }}</td>
                             <td class="text-center">{{ i.prfCfop }}</td>
                             <td class="text-center">{{ i.prfRecBruta }}</td>
                             <td class="text-center">{{ i.prfDtUltRec }}</td>
@@ -335,10 +337,7 @@
                         </tr>
                     </tbody>
                 </table>
-                <button class="geral-button" v-on:click="
-              NovoPerfil();
-              AbrirModal('#profileModal');
-            ">
+                <button class="geral-button" v-on:click="NovoPerfil();AbrirModal('#profileModal');">
                     Novo Perfil
                 </button>
             </div>
@@ -921,9 +920,7 @@
                 <div class="modal-content">
                     <!-- Modal-Header -->
                     <div class="modal-header">
-                        <h5 class="modal-title" id="TituloModalCentralizado">
-                            Configurar Perfil
-                        </h5>
+                        <h5 class="modal-title" id="TituloModalCentralizado">Configurar Perfil</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Fechar" @click="this.mostrarModalPerfil = false">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -990,26 +987,14 @@
 </template>
 
 <script>
-import {
-    RetUrlAPI
-} from "@/helpers/axios.js";
-import {
-    CallPostAsync
-} from "@/helpers/axios.js";
-import {
-    CallGetAsync
-} from "@/helpers/axios.js";
+import { RetUrlAPI } from "@/helpers/axios.js";
+import { CallPostAsync } from "@/helpers/axios.js";
+import { CallGetAsync } from "@/helpers/axios.js";
 import helpers from "@/helpers";
 import notifications from "@/helpers/notifications.js";
-import {
-    useAuthStore
-} from "@/stores/user";
-import {
-    useAlertStore
-} from "@/stores";
-import {
-    ref
-} from "vue";
+import { useAuthStore } from "@/stores/user";
+import { useAlertStore } from "@/stores";
+import { ref } from "vue";
 import router from "@/router/index";
 import TaxProfile from "@/components/TaxProfile.vue";
 import TaxRemittee from "@/components/TaxRemittee.vue";
@@ -1095,65 +1080,30 @@ export default {
             dadosUsuariosVinculados: [],
             detalhesUsuarioAtualVinculado: [],
             saldoLicencas: [],
-            caracTrib: [{
-                    text: "0-Industrial",
-                    value: 0,
-                },
-                {
-                    text: "1-Distribuidor",
-                    value: 1,
-                },
-                {
-                    text: "2-Atacadista",
-                    value: 2,
-                },
-                {
-                    text: "3-Varejista",
-                    value: 3,
-                },
-                {
-                    text: "4-Produtor Rural Pessoa Jurídica",
-                    value: 4,
-                },
-                {
-                    text: "5-Produtor Rural Pessoa Física",
-                    value: 5,
-                },
-                {
-                    text: "6-Pessoa Jurídica não Contribuinte do ICMS",
-                    value: 6,
-                },
-                {
-                    text: "7-Pessoa Física não Contribuinte do ICMS",
-                    value: 7,
-                },
+
+            caracTrib: [
+                { text: "0-Industrial",                                 value: 0, },
+                { text: "1-Distribuidor",                               value: 1, },
+                { text: "2-Atacadista",                                 value: 2, },
+                { text: "3-Varejista",                                  value: 3, },
+                { text: "4-Produtor Rural Pessoa Jurídica",             value: 4, },
+                { text: "5-Produtor Rural Pessoa Física",               value: 5, },
+                { text: "6-Pessoa Jurídica não Contribuinte do ICMS",   value: 6, },
+                { text: "7-Pessoa Física não Contribuinte do ICMS",     value: 7, },
             ],
-            destMerc: [{
-                    text: "0-Revenda",
-                    value: 0,
-                },
-                {
-                    text: "1-Insumo",
-                    value: 1,
-                },
-                {
-                    text: "2-Uso e Consumo Ou Ativo Imobilizado.",
-                    value: 2,
-                },
+
+            destMerc: [
+                { text: "0-Revenda",                                    value: 0, },
+                { text: "1-Insumo",                                     value: 1, },
+                { text: "2-Uso e Consumo Ou Ativo Imobilizado.",        value: 2, },
             ],
-            destOperacao: [{
-                    text: "Transferência",
-                    value: 0,
-                },
-                {
-                    text: "Venda",
-                    value: 1,
-                },
-                {
-                    text: "Compra",
-                    value: 2,
-                },
+
+            destOperacao: [
+                { text: "Transferência",                                value: 0, },
+                { text: "Venda",                                        value: 1, },
+                { text: "Compra",                                       value: 2, },
             ],
+
             alertStore: useAlertStore(),
 
             notificacao: {},
@@ -1163,15 +1113,15 @@ export default {
     },
     methods: {
         AbrirModal(modal) {
-            $(modal).modal({
-                show: true,
-                backdrop: "static",
-                keyboard: false,
-            });
+            $(modal).modal(
+                { show: true, backdrop: "static", keyboard: false, }
+            );
         },
+
         FecharModal(modal) {
             $(modal).modal("hide");
         },
+
         RequisitarGestao() {
             let url = RetUrlAPI() + "RequestTransferManagement";
             let objSend = new Object();
@@ -1184,16 +1134,13 @@ export default {
 
             applicant.id = this.userStore.user.userId;
             applicant.email = this.userStore.user.mail;
-            applicant.notification =
-                "Sua solicitação de gestão foi enviado ao Gestor da conta.";
+            applicant.notification = "Sua solicitação de gestão foi enviado ao Gestor da conta.";
 
             objSend.manager = manager;
             objSend.applicant = applicant;
 
             if (this.userStore.user.type != "N") {
-                this.alertStore.error(
-                    "Seu tipo de usuário não permite a requisição de gestão"
-                );
+                this.alertStore.error( "Seu tipo de usuário não permite a requisição de gestão" );
                 return;
             }
 
@@ -1240,6 +1187,7 @@ export default {
                     this.alertStore.error(data.mensagem);
                 });
         },
+
         async TransferirGestao(userVinculado) {
             this.processando = true;
             let url = RetUrlAPI() + "TransferManagement";
@@ -1290,6 +1238,7 @@ export default {
                     this.alertStore.error(reason);
                 });
         },
+
         Encerrar() {
             if (!this.VerificarCampos()) {
                 this.alertStore.error("Os dois campos precisam ser preenchidos.");
@@ -1298,6 +1247,7 @@ export default {
 
             this.VerificarSenha(this.senhaModal, 0);
         },
+
         async EncerrarConta(userVinculado) {
             this.processando = true;
 
@@ -1345,6 +1295,7 @@ export default {
                 }
             });
         },
+
         LimparModal() {
             let chkEncerrar = document.getElementById("chkEncerrarConta");
 
@@ -1355,6 +1306,7 @@ export default {
             this.senhaConfirmarExclusao = "";
             this.senhaConfirmarTransferencia = "";
         },
+
         AlterarSenha() {
             this.processando = true;
 
@@ -1382,6 +1334,7 @@ export default {
                 }
             });
         },
+
         ConverterStatus(status) {
             switch (status) {
                 case "N":
@@ -1394,21 +1347,14 @@ export default {
                     return "D (Descadastrado)";
             }
         },
+
         ConsultarDetalhesUsuarioVinculado(idUsuarioVinculado, userSolicGestao) {
             this.detalhesUsuarioAtualVinculado = [];
             this.detalhesPlanoUsuarioAtualVinculado = [];
 
             let tokenSessao = this.userStore.user.tokenSession;
             let idGestor = this.userStore.user.userId;
-
-            let url =
-                RetUrlAPI() +
-                "UserInformations?userID=" +
-                idUsuarioVinculado +
-                "&sessionToken=" +
-                tokenSessao +
-                "&idGestor=" +
-                idGestor;
+            let url = RetUrlAPI() + "UserInformations?userID=" + idUsuarioVinculado + "&sessionToken=" + tokenSessao + "&idGestor=" + idGestor;
 
             CallGetAsync(url)
                 .then((data) => {
@@ -1464,16 +1410,17 @@ export default {
                     this.processando = false;
                 });
         },
+
         BuscarDadosUsuario() {
             let token = this.userStore.user.token;
-
             let autenticUser = new Object();
-            autenticUser.token = token;
-
             let url = RetUrlAPI() + "UserInformation";
+
+            autenticUser.token = token;
 
             CallPostAsync("usuario", "", url, autenticUser);
         },
+
         async BuscarUsuariosVinculados() {
             this.processando = true;
 
@@ -1497,6 +1444,7 @@ export default {
             this.mostrarDadosVinculados = true;
             this.processando = false;
         },
+
         async ObterUsuariosVinculados() {
             let tokenSessao = this.userStore.user.tokenSession;
             let id = this.userStore.user.userId;
@@ -1521,6 +1469,7 @@ export default {
 
             return data;
         },
+
         BuscarDadosSolucoes() {
             this.processando = true;
 
@@ -1570,6 +1519,7 @@ export default {
                     this.processando = false;
                 });
         },
+
         AtualizarDadosConta() {
             this.processando = true;
 
@@ -1595,6 +1545,7 @@ export default {
                     );
                 });
         },
+
         AtualizarUsuario() {
             this.processando = true;
 
@@ -1629,7 +1580,7 @@ export default {
                 .then((data) => {
                     if (data == "OK") {
                         this.processando = false;
-                        this.alertStore.success("Alteração realizada com sucesso!");
+                        this.alertStore.success("Alteração realizada com sucesso! Reinicie o Sistema para que suas alterações tenham efeito.");
                         helpers.GravarLog(
                             "Alterou seus dados cadastrais",
                             "minhaconta.html",
@@ -1669,6 +1620,7 @@ export default {
                     this.alertStore.error(mensagemRetorno);
                 });
         },
+
         AtualizarFormulario(dados) {
             this.nome = dados.usua_nome;
             this.sobrenome = dados.usua_sobrenome;
@@ -1690,31 +1642,21 @@ export default {
                 }
             }
         },
+
         Alterar() {
             if (this.VerificarCamposAlteracao()) {
                 this.VerificarSenha(this.senhaAtual, 1);
             }
         },
+
         VerificarCamposAlteracao() {
-            if (
-                this.novaSenha == "" ||
-                this.novaSenha.length < 6 ||
-                this.novaSenha.length > 12
-            ) {
-                this.alertStore.error(
-                    "Por favor informar nova senha. (Deve conter no mínimo 6 caracteres e no máximo 12 caracteres)."
-                );
+            if ( this.novaSenha == "" || this.novaSenha.length < 6 || this.novaSenha.length > 12 ) {
+                this.alertStore.error( "Por favor informar nova senha. (Deve conter no mínimo 6 caracteres e no máximo 12 caracteres).");
                 return false;
             }
 
-            if (
-                this.confirmarSenha == "" ||
-                this.confirmarSenha.length < 6 ||
-                this.confirmarSenha.length > 12
-            ) {
-                this.alertStore.error(
-                    "Por favor confirmar a nova senha. (No mínimo 6 caracteres e no máximo 12 caracteres)."
-                );
+            if ( this.confirmarSenha == "" || this.confirmarSenha.length < 6 || this.confirmarSenha.length > 12) {
+                this.alertStore.error("Por favor confirmar a nova senha. (No mínimo 6 caracteres e no máximo 12 caracteres).");
                 return false;
             }
 
@@ -1723,19 +1665,14 @@ export default {
                 return false;
             }
 
-            if (
-                this.senhaAtual == "" ||
-                this.senhaAtual.length < 6 ||
-                this.senhaAtual.length > 12
-            ) {
-                this.alertStore.error(
-                    "Por favor informar sua senha atual, para poder alterar sua senha. (6 a 12 caracteres)S"
-                );
+            if ( this.senhaAtual == "" || this.senhaAtual.length < 6 || this.senhaAtual.length > 12) {
+                this.alertStore.error( "Por favor informar sua senha atual, para poder alterar sua senha. (6 a 12 caracteres)S" );
                 return false;
             }
 
             return true;
         },
+
         VerificarCampos() {
             if (!this.confirmacao) return false;
 
@@ -1743,6 +1680,7 @@ export default {
 
             return true;
         },
+
         async PreencherComboSegmentos() {
             let dadosSegmento = await helpers.getSegments();
 
@@ -1750,16 +1688,8 @@ export default {
                 this.lstSegmento = dadosSegmento.segments;
             }
         },
-        DadosUsuario(
-            nome,
-            sobrenome,
-            email,
-            uf,
-            telefone,
-            empresa,
-            cnpjcpf,
-            segmento
-        ) {
+
+        DadosUsuario( nome, sobrenome, email, uf, telefone, empresa, cnpjcpf, segmento ) {
             var user = new Object();
 
             user.name = nome;
@@ -1779,6 +1709,7 @@ export default {
 
             return user;
         },
+
         MostrarSenha() {
             if (this.password) {
                 this.tipoCampo = "text";
@@ -1790,6 +1721,7 @@ export default {
 
             this.password = !this.password;
         },
+
         VerificarSenha(senha, opcao, userVinculado) {
             let sendUser = this.GerarObjetoEnvio(senha);
 
@@ -1831,6 +1763,7 @@ export default {
                 }
             });
         },
+
         GerarObjetoEnvio(senha, userId, userEmail) {
             let sendUser = new Object();
 
@@ -1844,6 +1777,7 @@ export default {
 
             return sendUser;
         },
+
         GerarObjetoEnvioAlteracao() {
             let userAlterPassword = new Object();
 
@@ -1855,6 +1789,7 @@ export default {
 
             return userAlterPassword;
         },
+
         GetClassTransferManagement(user) {
             let addWarning = "";
 
@@ -1866,9 +1801,11 @@ export default {
 
             return "nav-item" + addWarning;
         },
+
         FirstLetterUpper(value) {
             return helpers.FirstLetterUpper(value);
         },
+
         JaExpirado(dataExpiracao) {
             let dataHoje = new Date();
             dataHoje.setHours(0, 0, 0, 0);
@@ -1879,6 +1816,7 @@ export default {
 
             return false;
         },
+
         // Usuario vinculado
         LimparDadosUsuarioVinculado() {
             this.nomeUsuarioVinculado = "";
@@ -1894,6 +1832,7 @@ export default {
 
             this.FecharModal("#modalAdicionarUsuario");
         },
+
         GerarObjetoEnvioUsuarioVinculado() {
             let user = new Object();
 
@@ -1902,10 +1841,7 @@ export default {
             user.uf = this.ufUsuarioVinculado;
             user.phone = this.telefoneUsuarioVinculado;
             user.company = this.empresaUsuarioVinculado;
-            user.cnpjcpf = this.cnpjUsuarioVinculado
-                .replaceAll(".", "")
-                .replaceAll("-", "")
-                .replaceAll("/", "");
+            user.cnpjcpf = this.cnpjUsuarioVinculado.replaceAll(".", "").replaceAll("-", "").replaceAll("/", "");
             user.email = this.emailUsuarioVinculado;
             user.managerId = this.userStore.user.userId;
             user.urlContext = RetUrlAPI();
@@ -1921,6 +1857,7 @@ export default {
 
             return user;
         },
+
         ValidacaoUsuarioVinculado() {
             if (this.cnpjUsuarioVinculado != "") {
                 if (!helpers.ValidaCNPJ(this.cnpjUsuarioVinculado)) {
@@ -1941,6 +1878,7 @@ export default {
 
             return true;
         },
+
         EnviarEmailNovoUsuario(email, senha) {
             let dadosEmail = new Object();
             dadosEmail.nome = this.nomeUsuarioVinculado;
@@ -1957,6 +1895,7 @@ export default {
 
             helpers.EnviarEmail(5, email, dadosEmail);
         },
+
         async RegistrarUsuarioVinculado() {
             this.processando = true;
 
@@ -2015,10 +1954,11 @@ export default {
                     });
             }
         },
+
         FormatarTelefone() {
             // helpers.FormatarTelefone(this.telefoneUsuarioVinculado);
-            console.log(this.telefoneUsuarioVinculado);
         },
+
         BuscarPerfis() {
             this.mostrarModalPerfil = false;
             this.FecharModal("#profileModal");
@@ -2029,14 +1969,8 @@ export default {
             let perfilPrincipal = 0;
 
             let tokenSessao = this.userStore.user.tokenSession;
-            let id = this.userStore.user.userId;
-
-            let url =
-                RetUrlAPI() +
-                "InformationProfile?userID=" +
-                id +
-                "&tokenSession=" +
-                tokenSessao;
+            let id = this.userStore.user.userId; 
+            let url = RetUrlAPI() + "InformationProfile?userID=" + id + "&tokenSession=" + tokenSessao;
 
             CallGetAsync(url)
                 .then((data) => {
@@ -2086,6 +2020,7 @@ export default {
                     this.alertStore.error(reason);
                 });
         },
+
         TrocarPerfilPrincipal(index) {
             if (this.idPrincipal === index) {
                 return;
@@ -2132,18 +2067,8 @@ export default {
                     this.alertStore.error(mensagemRetorno);
                 });
         },
-        GerarObjetoPerfil(
-            uf,
-            regTrib,
-            atividade,
-            apelido,
-            idPerfil,
-            cnae,
-            recBruta,
-            cfop,
-            dtUltRec,
-            principal = true
-        ) {
+
+        GerarObjetoPerfil(uf, regTrib, atividade, apelido, idPerfil, cnae, recBruta, cfop, dtUltRec, principal = true) {
             let perfil = new Object();
 
             perfil.principal = principal;
@@ -2166,6 +2091,7 @@ export default {
 
             return perfil;
         },
+
         DefineIndexPerfil(index) {
             if (this.perfis[index].prfPrincipal) {
                 this.principal = true;
@@ -2175,6 +2101,7 @@ export default {
             this.idxPerfil = index;
             this.principal = false;
         },
+
         ExcluirPerfil() {
             let id = -1;
             let ids = [this.perfis[this.idxPerfil].prfId];
@@ -2202,6 +2129,7 @@ export default {
                 }
             });
         },
+
         NovoPerfil() {
             this.chavePerfil++;
             this.idxPerfil = -1;
@@ -2218,12 +2146,14 @@ export default {
             };
             this.mostrarModalPerfil = true;
         },
+
         AlterarPerfil(index) {
             this.chavePerfil++;
             this.idxPerfil = index;
             this.perfil = this.perfis[index];
             this.mostrarModalPerfil = true;
         },
+
         BuscarDestinatario() {
             this.mostrarModalDestinatario = false;
             this.FecharModal("#remitteeModal");
@@ -2231,7 +2161,6 @@ export default {
 
             let tokenSessao = this.userStore.user.tokenSession;
             let id = this.userStore.user.userId;
-
             let url = RetUrlAPI() + "RecipientsRead?userID=" + id + "&sessionToken=" + tokenSessao;
 
             CallGetAsync(url)
@@ -2269,13 +2198,7 @@ export default {
 
             let tokenSessao = this.userStore.user.tokenSession;
             let id = this.userStore.user.userId;
-
-            let url =
-                RetUrlAPI() +
-                "RecipientsDelete?userID=" +
-                id +
-                "&sessionToken=" +
-                tokenSessao;
+            let url = RetUrlAPI() + "RecipientsDelete?userID=" + id + "&sessionToken=" + tokenSessao;
 
             CallPostAsync("usuario", "", url, ids).then((data) => {
                 if (data == "OK") {
@@ -2303,10 +2226,7 @@ export default {
         },
 
         MarcarComoLido(notificacao) {
-            notifications.MarcarComoLido(
-                notificacao,
-                document.getElementById("chkLido")
-            );
+            notifications.MarcarComoLido( notificacao, document.getElementById("chkLido") );
         },
 
         NovoDestinatario() {
@@ -2329,7 +2249,6 @@ export default {
         Notificacoes() {
             this.notificacoes = this.userStore.user.notifications;
             this.qtdeNotificacoes = this.notificacoes.length;
-
             this.mensagemNaoLida = this.userStore.user.unread;
         },
 
@@ -2352,9 +2271,7 @@ export default {
 
             //----------------------------------------------------------------------
             if (!uuid) {
-                this.alertStore.error(
-                    "O Contrato para essa solução não foi encontrado."
-                );
+                this.alertStore.error( "O Contrato para essa solução não foi encontrado." );
                 return;
             }
 
